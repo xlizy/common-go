@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "Result.proto";
+
+option go_package = "./;dubbo_api";
+
+service SsoDubboProvider {
+  rpc PasswordLogin (PasswordLoginReq) returns (LoginRsp) {}
+}
+
+message PasswordLoginReq {
+  Result result         = 1;
+  string RequestTicket  = 2;
+  string Account        = 3;
+  string Password       = 4;
+  string Ticket         = 5;
+  string RandStr        = 6;
+  string RequestIp      = 7;
+  string Scenes         = 8;
+}
+
+message LoginRsp {
+  Result result         = 1;
+  string other          = 2;
+}
