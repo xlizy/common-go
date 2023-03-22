@@ -54,7 +54,7 @@ func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
 
 	check := false
 	for _, service := range services.Consumer {
-		config.SetConsumerService(&service.Interface)
+		config.SetConsumerService(service.Interface)
 		rc.Consumer.References[service.Name] = &config.ReferenceConfig{
 			InterfaceName: service.InterfaceName,
 			Protocol:      "tri",
@@ -63,7 +63,7 @@ func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
 		}
 	}
 	for _, service := range services.Provider {
-		config.SetProviderService(&service.Interface)
+		config.SetProviderService(service.Interface)
 		rc.Provider.Services[service.Name] = &config.ServiceConfig{
 			Interface: service.InterfaceName,
 			Group:     "DEFAULT",
