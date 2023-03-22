@@ -33,8 +33,8 @@ type Service struct {
 }
 
 type Services struct {
-	Consumer [...]Service
-	Provider [...]Service
+	Consumer []Service
+	Provider []Service
 }
 
 func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
