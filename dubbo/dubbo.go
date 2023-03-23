@@ -108,7 +108,23 @@ type traceIdFilter struct {
 }
 
 func (t traceIdFilter) Invoke(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation) protocol.Result {
-	traceId := uuid.New().String()
+	traceId := "<nil>"
+	traceIdKey := "_traceId"
+	filterVal, ok := invocation.GetAttachment(traceIdKey)
+	if ok {
+		traceId = filterVal
+	} else {
+		if threadlocal.TraceId.Get() != nil {
+			v := threadlocal.TraceId.Get()
+			if v != nil {
+				traceId = v.(string)
+			}
+		}
+	}
+	if traceId == "<nil>" {
+		traceId = uuid.New().String()
+	}
+	invocation.SetAttachment(traceIdKey, traceId)
 	threadlocal.TraceId.Set(traceId)
 	zlog.Info("traceIdFilter Invoke is called, method Name = %s", invocation.MethodName())
 	return invoker.Invoke(ctx, invocation)
