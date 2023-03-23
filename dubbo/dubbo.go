@@ -62,6 +62,8 @@ func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
 			Protocol:      "tri",
 			Check:         &check,
 			Retries:       "0",
+			Group:         "DEFAULT",
+			Version:       "1.0.0",
 		}
 	}
 	for _, service := range services.Provider {
