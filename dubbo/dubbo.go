@@ -85,6 +85,7 @@ func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
 			Retries:       "0",
 			Group:         "DEFAULT",
 			Version:       "1.0.0",
+			Filter:        "TraceIdFilter",
 		}
 	}
 	for _, service := range services.Provider {
@@ -93,6 +94,7 @@ func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
 			Interface: service.InterfaceName,
 			Group:     "DEFAULT",
 			Version:   "1.0.0",
+			Filter:    "TraceIdFilter",
 		}
 	}
 
