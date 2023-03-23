@@ -8,7 +8,8 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/protocol"
 	"github.com/google/uuid"
 	commonConfig "github.com/xlizy/common-go/config"
-	threadlocal "github.com/xlizy/common-go/const"
+	"github.com/xlizy/common-go/const/err_code"
+	"github.com/xlizy/common-go/const/threadlocal"
 	"github.com/xlizy/common-go/zlog"
 	"math/rand"
 	"strconv"
@@ -38,6 +39,7 @@ type Services struct {
 }
 
 func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
+	err_code.Err{}.Get(100)
 	extension.SetFilter("TraceIdFilter", NewTraceIdFilter)
 	rc := config.GetRootConfig()
 	rc.Application.Name = dubboConfig.AppName

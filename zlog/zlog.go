@@ -1,7 +1,7 @@
 package zlog
 
 import (
-	threadlocal "github.com/xlizy/common-go/const"
+	"github.com/xlizy/common-go/const/threadlocal"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
