@@ -14,6 +14,7 @@ import (
 	"math/rand"
 	"strconv"
 
+	_ "dubbo.apache.org/dubbo-go/v3/cluster/cluster/failover"
 	_ "dubbo.apache.org/dubbo-go/v3/config_center/nacos"
 	//_ "dubbo.apache.org/dubbo-go/v3/imports"
 	_ "dubbo.apache.org/dubbo-go/v3/metadata/report/nacos"
