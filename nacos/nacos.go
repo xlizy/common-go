@@ -8,6 +8,7 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	"github.com/xlizy/common-go/config"
 	"github.com/xlizy/common-go/utils"
+	"gopkg.in/yaml.v3"
 	"reflect"
 	"strings"
 )
@@ -40,7 +41,7 @@ func InitNacos(cf config.Nacos, webSerPort *int) {
 		panic(err3)
 	}
 	configClient = _cc
-	loadConfig(cf.DataIds)
+	loadRemoteConfig(cf.DataIds)
 	if !reflect.DeepEqual(BaseWebConfigVal.ServerConfig, WebServerConfig{}) && BaseWebConfigVal.ServerConfig.Port != 0 {
 		*webSerPort = BaseWebConfigVal.ServerConfig.Port
 	}
@@ -72,10 +73,10 @@ func InitNacos(cf config.Nacos, webSerPort *int) {
 
 }
 
-func loadConfig(configs string) {
+func loadRemoteConfig(dataIds string) {
 	BaseWebConfigVal = &BaseWebConfig{}
-	if configs != "" {
-		ids := strings.Split(configs, ",")
+	if dataIds != "" {
+		ids := strings.Split(dataIds, ",")
 		configVal = make(map[string]string, len(ids))
 		for _, id := range ids {
 			if id != "" {
@@ -83,7 +84,7 @@ func loadConfig(configs string) {
 					DataId: id,
 					Group:  "DEFAULT_GROUP",
 				})
-				if configs != "" {
+				if dataIds != "" {
 					config.ReadConfig(conStr, &BaseWebConfigVal)
 				}
 				configVal[id] = conStr
@@ -102,4 +103,10 @@ func loadConfig(configs string) {
 
 func GetAllConfig() map[string]string {
 	return configVal
+}
+
+func LoadConfig(out interface{}) {
+	for _, content := range configVal {
+		yaml.Unmarshal([]byte(content), out)
+	}
 }

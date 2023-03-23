@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type RootConfig struct {
+	Orm   OrmConfig             `yaml:"orm"`
+	Multi map[string]*OrmConfig `yaml:"orm-multi"`
+}
+
 type OrmConfig struct {
 	Dsn             string        `yaml:"dsn"`
 	MaxOpen         int           `yaml:"max-open"`
@@ -13,35 +18,13 @@ type OrmConfig struct {
 	ConnMaxLifetime time.Duration `yaml:"conn-max-lifetime"`
 }
 
-type MultiOrmConfig struct {
-	Multi map[string]*OrmConfig
-}
-
 var _primaryDb *gorm.DB
 var _multiDb map[string]*gorm.DB
 
-// InitOrm 初始化单数据源
-func InitOrm(config OrmConfig) {
-	var err error
-	db, err := gorm.Open(mysql.Open(config.Dsn), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	if db.Error != nil {
-		panic(db.Error)
-	}
-	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(config.MaxOpen)
-	sqlDB.SetMaxIdleConns(config.MaxIdle)
-	sqlDB.SetConnMaxLifetime(config.ConnMaxLifetime)
-	_primaryDb = db
-}
-
-// MultiOrm 初始化多数据源
-func MultiOrm(config MultiOrmConfig) {
-	multi := config.Multi
-	if multi != nil {
-		for key, _config := range multi {
+// InitOrm 初始化数据源
+func InitOrm(rc RootConfig) {
+	if rc.Multi != nil && len(rc.Multi) > 0 {
+		for key, _config := range rc.Multi {
 			var err error
 			_db, err := gorm.Open(mysql.Open(_config.Dsn), &gorm.Config{})
 			if err != nil {
@@ -59,7 +42,22 @@ func MultiOrm(config MultiOrmConfig) {
 			}
 			_multiDb[key] = _db
 		}
+	} else {
+		var err error
+		db, err := gorm.Open(mysql.Open(rc.Orm.Dsn), &gorm.Config{})
+		if err != nil {
+			panic(err)
+		}
+		if db.Error != nil {
+			panic(db.Error)
+		}
+		sqlDB, _ := db.DB()
+		sqlDB.SetMaxOpenConns(rc.Orm.MaxOpen)
+		sqlDB.SetMaxIdleConns(rc.Orm.MaxIdle)
+		sqlDB.SetConnMaxLifetime(rc.Orm.ConnMaxLifetime)
+		_primaryDb = db
 	}
+
 }
 
 func Conn() *gorm.DB {

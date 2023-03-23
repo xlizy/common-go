@@ -1,21 +1,27 @@
 package redis
 
-import "github.com/go-redis/redis/v8"
+import (
+	"github.com/go-redis/redis/v8"
+)
+
+type RootConfig struct {
+	Config RedisConfig `yaml:"redis"`
+}
 
 type RedisConfig struct {
-	Addr     string
-	Password string
-	DB       int
+	Addr     string `yaml:"addr"`
+	Password string `yaml:"password"`
+	DB       int    `yaml:"db"`
 }
 
 var client *redis.Client
 
-func InitRedis(config RedisConfig) {
+func InitRedis(rc RootConfig) {
 	// 初始化一个新的redis client
 	client = redis.NewClient(&redis.Options{
-		Addr:     config.Addr,     // redis地址
-		Password: config.Password, // redis没密码，没有设置，则留空
-		DB:       config.DB,       // 使用默认数据库
+		Addr:     rc.Config.Addr,     // redis地址
+		Password: rc.Config.Password, // redis没密码，没有设置，则留空
+		DB:       rc.Config.DB,       // 使用默认数据库
 	})
 }
 
