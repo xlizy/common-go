@@ -56,7 +56,7 @@ func instanceRegister() {
 		"ip":          {utils.GetLocalIp()},
 		"healthy":     {"true"},
 		"weight":      {"1.0"},
-		"serviceName": {cfg.AppName},
+		"serviceName": {appName(cfg.AppName)},
 		"encoding":    {"GBK"},
 		"namespaceId": {cfg.Namespace},
 	}
@@ -73,13 +73,13 @@ func instanceRegister() {
 			beat["port"] = port
 			beat["metadata"] = make(map[string]interface{})
 			beat["scheduled"] = true
-			beat["serviceName"] = cfg.AppName
+			beat["serviceName"] = appName(cfg.AppName)
 			beat["weight"] = 1
 
 			beatStr, _ := json.Marshal(&beat)
 
 			params := url.Values{}
-			params.Set("serviceName", cfg.AppName)
+			params.Set("serviceName", appName(cfg.AppName))
 			params.Set("ip", ip)
 			params.Set("port", port)
 			params.Set("namespaceId", cfg.Namespace)
@@ -168,4 +168,8 @@ func LoadConfig(out interface{}) {
 	for _, content := range configVal {
 		yaml.Unmarshal([]byte(content), out)
 	}
+}
+
+func appName(name string) string {
+	return "http:" + name
 }

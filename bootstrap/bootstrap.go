@@ -8,5 +8,6 @@ import (
 
 func Init() {
 	zlog.InitLogger(config.GetLogCfg().Path)
+	zlog.Info("项目开始启动...")
 	nacos.InitNacos()
 }

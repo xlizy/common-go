@@ -37,7 +37,6 @@ func init() {
 		fmt.Println("读取文件失败：", err)
 		return
 	}
-	fmt.Println("yaml 文件的内容: \n", string(dataBytes))
 	err = yaml.Unmarshal(dataBytes, BootConfig)
 	if err != nil {
 		fmt.Println("解析 yaml 文件失败：", err)
@@ -46,7 +45,6 @@ func init() {
 	if BootConfig.Nacos.Namespace == "" {
 		BootConfig.Nacos.Namespace = os.Getenv("NACOS_NAMESPACE")
 	}
-	fmt.Printf("config → %+v\n", BootConfig)
 }
 
 func ReadConfig(configStr string, out interface{}) {

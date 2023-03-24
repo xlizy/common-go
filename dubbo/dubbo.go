@@ -62,6 +62,10 @@ func InitDubbo(services Services) {
 	nacosCfg := commonConfig.GetNacosCfg()
 	extension.SetFilter("TraceIdFilter", NewTraceIdFilter)
 	rc := config.GetRootConfig()
+	rc.Logger = config.NewLoggerConfigBuilder().Build()
+	rc.Logger.ZapConfig.Level = "error"
+	rc.Logger.ZapConfig.OutputPaths = []string{commonConfig.GetLogCfg().Path}
+
 	rc.Application.Name = commonConfig.GetNacosCfg().AppName
 	rc.Registries["nacos"] = &config.RegistryConfig{
 		Protocol:     "nacos",
