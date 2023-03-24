@@ -8,7 +8,6 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/protocol"
 	"github.com/google/uuid"
 	commonConfig "github.com/xlizy/common-go/config"
-	"github.com/xlizy/common-go/const/err_code"
 	"github.com/xlizy/common-go/const/threadlocal"
 	"github.com/xlizy/common-go/zlog"
 	"math/rand"
@@ -59,15 +58,15 @@ type Services struct {
 	Provider []Service
 }
 
-func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
-	err_code.Err{}.Get(100)
+func InitDubbo(services Services) {
+	nacosCfg := commonConfig.GetNacosCfg()
 	extension.SetFilter("TraceIdFilter", NewTraceIdFilter)
 	rc := config.GetRootConfig()
-	rc.Application.Name = dubboConfig.AppName
+	rc.Application.Name = commonConfig.GetNacosCfg().AppName
 	rc.Registries["nacos"] = &config.RegistryConfig{
 		Protocol:     "nacos",
-		Address:      dubboConfig.Ip + ":" + strconv.Itoa(int(dubboConfig.Port)),
-		Namespace:    dubboConfig.Namespace,
+		Address:      nacosCfg.Addr,
+		Namespace:    nacosCfg.Namespace,
 		RegistryType: "interface",
 	}
 	rc.Protocols["tri"] = &config.ProtocolConfig{
@@ -99,7 +98,6 @@ func InitDubbo(dubboConfig commonConfig.Nacos, services Services) {
 	}
 
 	if err := config.Load(config.WithRootConfig(rc)); err != nil {
-		//if err := config.Load(); err != nil {
 		panic(err)
 	}
 }
@@ -109,7 +107,7 @@ type traceIdFilter struct {
 
 func (t traceIdFilter) Invoke(ctx context.Context, invoker protocol.Invoker, invocation protocol.Invocation) protocol.Result {
 	traceId := "<nil>"
-	traceIdKey := "_traceId"
+	traceIdKey := "_dubbo_trace_id"
 	filterVal, ok := invocation.GetAttachment(traceIdKey)
 	if ok {
 		traceId = filterVal
@@ -126,12 +124,12 @@ func (t traceIdFilter) Invoke(ctx context.Context, invoker protocol.Invoker, inv
 	}
 	invocation.SetAttachment(traceIdKey, traceId)
 	threadlocal.TraceId.Set(traceId)
-	zlog.Info("traceIdFilter Invoke is called, method Name = %s", invocation.MethodName())
+	zlog.Info("Dubbo接口开始 method Name = %s", invocation.MethodName())
 	return invoker.Invoke(ctx, invocation)
 }
 
 func (t traceIdFilter) OnResponse(ctx context.Context, result protocol.Result, invoker protocol.Invoker, invocation protocol.Invocation) protocol.Result {
-	zlog.Info("traceIdFilter OnResponse is called")
+	zlog.Info("Dubbo接口结束")
 	return result
 }
 

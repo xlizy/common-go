@@ -3,7 +3,7 @@ package nacos
 var BaseWebConfigVal *BaseWebConfig
 
 type WebServerConfig struct {
-	Port         int    `yaml:"port"`
+	Port         string `yaml:"port"`
 	CookieDomain string `yaml:"cookie-domain"`
 }
 type BaseWebConfig struct {

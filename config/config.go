@@ -6,40 +6,53 @@ import (
 	"os"
 )
 
-type Logger struct {
+type logger struct {
 	Path string `json:"path"`
 }
-type Nacos struct {
-	Ip        string `yaml:"ip"`
-	Port      uint64 `yaml:"port"`
+type nacos struct {
+	Addr      string `yaml:"addr"`
 	Namespace string `yaml:"namespace"`
 	AppName   string `yaml:"app-name"`
 	DataIds   string `yaml:"data-ids"`
 }
 type BoostrapConfig struct {
-	Logger Logger `yaml:"logger"`
-	Nacos  Nacos  `yaml:"nacos"`
+	HttpPort string
+	Logger   logger `yaml:"logger"`
+	Nacos    nacos  `yaml:"nacos"`
 }
 
-func LoadConfig(boostrapConfig *BoostrapConfig) {
+var BootConfig = &BoostrapConfig{HttpPort: "8080"}
+
+func GetNacosCfg() nacos {
+	return BootConfig.Nacos
+}
+
+func GetLogCfg() logger {
+	return BootConfig.Logger
+}
+
+func init() {
 	dataBytes, err := os.ReadFile("bootstrap.yml")
 	if err != nil {
 		fmt.Println("读取文件失败：", err)
 		return
 	}
 	fmt.Println("yaml 文件的内容: \n", string(dataBytes))
-	err = yaml.Unmarshal(dataBytes, &boostrapConfig)
+	err = yaml.Unmarshal(dataBytes, BootConfig)
 	if err != nil {
 		fmt.Println("解析 yaml 文件失败：", err)
 		return
 	}
-	if boostrapConfig.Nacos.Namespace == "" {
-		boostrapConfig.Nacos.Namespace = os.Getenv("NACOS_NAMESPACE")
+	if BootConfig.Nacos.Namespace == "" {
+		BootConfig.Nacos.Namespace = os.Getenv("NACOS_NAMESPACE")
 	}
-	fmt.Printf("config → %+v\n", boostrapConfig)
+	fmt.Printf("config → %+v\n", BootConfig)
 }
 
 func ReadConfig(configStr string, out interface{}) {
+	if configStr == "" {
+		return
+	}
 	err := yaml.Unmarshal([]byte(configStr), out)
 	if err != nil {
 		return

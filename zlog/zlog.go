@@ -12,8 +12,21 @@ import (
 var Log *zap.Logger
 var SLog *zap.SugaredLogger
 
+var space map[int]string
+
 type Logger struct {
 	*zap.SugaredLogger
+}
+
+func init() {
+	space = make(map[int]string, 45)
+	for i := 0; i < 45; i++ {
+		v := ""
+		for j := 0; j < i; j++ {
+			v += " "
+		}
+		space[i] = v
+	}
 }
 
 func InitLogger(path string) {
@@ -41,7 +54,13 @@ func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 }
 
 func customCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString("[" + caller.TrimmedPath() + "]")
+	enc.AppendString("[" + appendTraceId() + "]")
+	path := caller.TrimmedPath()
+	formatLen := 35
+	if len(path) < formatLen {
+		path += space[formatLen-len(path)]
+	}
+	enc.AppendString("[" + path + "]")
 }
 
 func getWriterSyncer(path string) zapcore.WriteSyncer {
@@ -56,7 +75,7 @@ func getWriterSyncer(path string) zapcore.WriteSyncer {
 	return zapcore.AddSync(lumberWriteSyncer)
 }
 
-func appendTraceId(template string) string {
+func appendTraceId2(template string) string {
 	traceId := "<nil>"
 	if threadlocal.TraceId.Get() != nil {
 		v := threadlocal.TraceId.Get()
@@ -68,6 +87,32 @@ func appendTraceId(template string) string {
 	return template
 }
 
+func appendTraceId() string {
+	traceId := "<nil>"
+	if threadlocal.TraceId.Get() != nil {
+		v := threadlocal.TraceId.Get()
+		if v != nil {
+			traceId = v.(string)
+		}
+	}
+	if traceId == "<nil>" {
+		traceId = "00000000-0000-0000-0000-000000000000"
+	}
+	return traceId
+}
+
+func Debug(template string, args ...interface{}) {
+	SLog.Debugf(template, args...)
+}
+
 func Info(template string, args ...interface{}) {
-	SLog.Infof(appendTraceId(template), args...)
+	SLog.Infof(template, args...)
+}
+
+func Warn(template string, args ...interface{}) {
+	SLog.Warnf(template, args...)
+}
+
+func Error(template string, args ...interface{}) {
+	SLog.Errorf(template, args...)
 }
