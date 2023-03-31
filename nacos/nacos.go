@@ -3,8 +3,8 @@ package nacos
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"github.com/xlizy/common-go/config"
+	"github.com/xlizy/common-go/json"
 	"github.com/xlizy/common-go/utils"
 	"github.com/xlizy/common-go/zlog"
 	"gopkg.in/yaml.v3"
@@ -18,6 +18,7 @@ import (
 
 var baseHost = ""
 var configVal map[string]string
+var listenConfigs = make([]interface{}, 0)
 
 func init() {
 	BaseWebConfigVal = &BaseWebConfig{}
@@ -59,6 +60,8 @@ func instanceRegister() {
 		"serviceName": {appName(cfg.AppName)},
 		"encoding":    {"GBK"},
 		"namespaceId": {cfg.Namespace},
+		"clusterName": {cfg.Cluster},
+		"metadata":    {json.ToJsonStr(map[string]string{"availability-cluster": cfg.AvailabilityCluster})},
 	}
 	targetUrl := baseHost + "/nacos/v1/ns/instance"
 	http.PostForm(targetUrl, data)
@@ -68,15 +71,15 @@ func instanceRegister() {
 			ip := utils.GetLocalIp()
 			port := config.BootConfig.HttpPort
 			beat := make(map[string]interface{})
-			beat["cluster"] = "DEFAULT"
+			beat["cluster"] = cfg.Cluster
 			beat["ip"] = ip
 			beat["port"] = port
-			beat["metadata"] = make(map[string]interface{})
+			beat["metadata"] = map[string]string{"availability-cluster": cfg.AvailabilityCluster}
 			beat["scheduled"] = true
 			beat["serviceName"] = appName(cfg.AppName)
 			beat["weight"] = 1
 
-			beatStr, _ := json.Marshal(&beat)
+			beatStr := json.ToJsonStr(beat)
 
 			params := url.Values{}
 			params.Set("serviceName", appName(cfg.AppName))
@@ -123,12 +126,17 @@ func getRemoteConfigContent(namespace, dataId string) string {
 	uri, _ := url.ParseRequestURI(targetUrl)
 	uri.RawQuery = params.Encode()
 	resp, _ := http.Get(uri.String())
-	b, _ := io.ReadAll(resp.Body)
-	conStr = string(b)
-	resp.Body.Close()
-	if conStr != "" {
-		configVal[dataId] = conStr
-		config.ReadConfig(conStr, &BaseWebConfigVal)
+	if resp != nil {
+		b, _ := io.ReadAll(resp.Body)
+		conStr = string(b)
+		resp.Body.Close()
+		if conStr != "" {
+			configVal[dataId] = conStr
+			config.ReadConfig(conStr, &BaseWebConfigVal)
+			for _, config := range listenConfigs {
+				LoadConfig(config)
+			}
+		}
 	}
 	return conStr
 }
@@ -151,12 +159,28 @@ func listenConfig(namespace, dataId string) {
 		req, _ := http.NewRequest("POST", uri.String(), nil)
 		req.Header.Set("Long-Pulling-Timeout", "30000")
 		resp, _ := http.DefaultClient.Do(req)
-		b, _ := io.ReadAll(resp.Body)
-		if string(b) != "" {
-			zlog.Info("nacos监听到namespace:%s,dataId:%s配置发生变化", namespace, dataId)
-			getRemoteConfigContent(namespace, dataId)
+		if resp != nil {
+			b, _ := io.ReadAll(resp.Body)
+			res := string(b)
+			if res != "" {
+				//这种格式说明配置变了
+				if strings.Count(res, "%02") == 3 {
+					zlog.Info("nacos监听到namespace:%s,dataId:%s配置发生变化", namespace, dataId)
+					getRemoteConfigContent(namespace, dataId)
+				} else {
+					//这种说明配置中心可能还没有这个配置文件
+					time.Sleep(30 * time.Second)
+				}
+			}
+			resp.Body.Close()
 		}
-		resp.Body.Close()
+	}
+}
+
+func AddListen(configs ...interface{}) {
+	for _, config := range configs {
+		listenConfigs = append(listenConfigs, config)
+		LoadConfig(config)
 	}
 }
 
@@ -166,7 +190,9 @@ func GetAllConfig() map[string]string {
 
 func LoadConfig(out interface{}) {
 	for _, content := range configVal {
-		yaml.Unmarshal([]byte(content), out)
+		if content != "" {
+			yaml.Unmarshal([]byte(content), out)
+		}
 	}
 }
 

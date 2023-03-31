@@ -10,10 +10,12 @@ type logger struct {
 	Path string `json:"path"`
 }
 type nacos struct {
-	Addr      string `yaml:"addr"`
-	Namespace string `yaml:"namespace"`
-	AppName   string `yaml:"app-name"`
-	DataIds   string `yaml:"data-ids"`
+	Addr                string `yaml:"addr"`
+	Namespace           string `yaml:"namespace"`
+	AppName             string `yaml:"app-name"`
+	DataIds             string `yaml:"data-ids"`
+	Cluster             string `yaml:"cluster"`
+	AvailabilityCluster string `yaml:"availability-cluster"`
 }
 type BoostrapConfig struct {
 	HttpPort string
@@ -44,6 +46,12 @@ func init() {
 	}
 	if BootConfig.Nacos.Namespace == "" {
 		BootConfig.Nacos.Namespace = os.Getenv("NACOS_NAMESPACE")
+	}
+	if BootConfig.Nacos.Cluster == "" {
+		BootConfig.Nacos.Cluster = "DEFAULT"
+	}
+	if BootConfig.Nacos.AvailabilityCluster == "" {
+		BootConfig.Nacos.AvailabilityCluster = "DEFAULT"
 	}
 }
 

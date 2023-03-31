@@ -75,26 +75,8 @@ func getWriterSyncer(path string) zapcore.WriteSyncer {
 	return zapcore.AddSync(lumberWriteSyncer)
 }
 
-func appendTraceId2(template string) string {
-	traceId := "<nil>"
-	if threadlocal.TraceId.Get() != nil {
-		v := threadlocal.TraceId.Get()
-		if v != nil {
-			traceId = v.(string)
-		}
-	}
-	template = "traceId:" + traceId + "\t" + template
-	return template
-}
-
 func appendTraceId() string {
-	traceId := "<nil>"
-	if threadlocal.TraceId.Get() != nil {
-		v := threadlocal.TraceId.Get()
-		if v != nil {
-			traceId = v.(string)
-		}
-	}
+	traceId := threadlocal.GetTraceId()
 	if traceId == "<nil>" {
 		traceId = "00000000-0000-0000-0000-000000000000"
 	}

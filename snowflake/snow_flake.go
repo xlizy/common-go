@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/xlizy/common-go/utils"
+	"github.com/xlizy/common-go/zlog"
 	"sync"
 	"time"
 )
@@ -73,18 +74,20 @@ func Init(centerId, workerId int64) error {
 	return nil
 }
 
-func NextId() (int64, error) {
+func NextId() int64 {
 	s.lock.Lock() //设置锁，保证线程安全
 	defer s.lock.Unlock()
 
 	now := time.Now().UnixNano() / 1000000 // 获取当前时间戳，转毫秒
 	if now < s.lastTimestamp {             // 如果当前时间小于上一次 ID 生成的时间戳，说明发生时钟回拨
-		return 0, errors.New(fmt.Sprintf("Clock moved backwards. Refusing to generate id for %d milliseconds", s.lastTimestamp-now))
+		zlog.Error(fmt.Sprintf("Clock moved backwards. Refusing to generate id for %d milliseconds", s.lastTimestamp-now))
+		return 0
 	}
 
 	t := now - s.epoch
 	if t > s.maxTimeStamp {
-		return 0, errors.New(fmt.Sprintf("epoch must be between 0 and %d", s.maxTimeStamp-1))
+		zlog.Error(fmt.Sprintf("epoch must be between 0 and %d", s.maxTimeStamp-1))
+		return 0
 	}
 
 	// 同一时间生成的，则序号+1
@@ -103,5 +106,5 @@ func NextId() (int64, error) {
 	s.lastTimestamp = now
 
 	// 根据偏移量，向左位移达到
-	return (t << s.timestampShift) | (s.centerId << s.centerIdShift) | (s.workerId << s.workerIdShift) | s.sequence, nil
+	return (t << s.timestampShift) | (s.centerId << s.centerIdShift) | (s.workerId << s.workerIdShift) | s.sequence
 }

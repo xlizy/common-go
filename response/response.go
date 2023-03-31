@@ -1,64 +1,36 @@
 package response
 
 import (
-	"github.com/kataras/iris/v12"
+	"github.com/xlizy/common-go/const/threadlocal"
 	"time"
 )
 
-const (
-	TrafficKey = "X-Request-Id"
-	Success    = 0
-)
-
-var Default = &response{}
-
-func base(c iris.Context) Responses {
-	res := Default.Clone()
-	res.SetTraceID(GenerateMsgIDFromContext(c))
-	res.SetResponseTime(time.Now().Format("2006-01-02T15:04:05-0700"))
-	return res
+type Response struct {
+	Success      bool   `json:"success"`
+	Code         int32  `json:"code"`
+	Msg          string `json:"msg,omitempty"`
+	ResponseTime string `json:"responseTime,omitempty"`
+	TraceId      string `json:"traceId,omitempty"`
+	Data         any    `json:"data,omitempty"`
 }
 
-// Error 失败数据处理
-func Error(c iris.Context, code int, msg string, err error) {
-	res := base(c)
-	res.SetSuccess(false)
-	res.SetCode(int32(code))
-	if err != nil {
-		res.SetMsg(err.Error())
-	}
-	if msg != "" {
-		res.SetMsg(msg)
-	} else {
-		res.SetMsg("处理异常")
-	}
-	c.JSON(res)
+type PageResponse struct {
+	Total    int64 `json:"total"`
+	Data     []any `json:"data"`
+	PageNum  int32 `json:"pageNum"`
+	PageSize int32 `json:"pageSize"`
+	Pages    int32 `json:"pages"`
+	Size     int32 `json:"size"`
 }
 
-// OK 通常成功数据处理
-func OK(c iris.Context, data interface{}, msg string) {
-	res := base(c)
-	res.SetSuccess(true)
-	res.SetCode(Success)
-	if msg != "" {
-		res.SetMsg(msg)
-	} else {
-		res.SetMsg("处理成功")
-	}
-	res.SetData(data)
-	c.JSON(res)
+func Success(msg string, data any) Response {
+	return Response{Success: true, Code: 0, Msg: msg, ResponseTime: time.Now().Format("2006-01-02T15:04:05-0700"), TraceId: threadlocal.GetTraceId(), Data: data}
 }
 
-// PageOK 分页数据处理
-func PageOK(c iris.Context, result interface{}, count int, pageIndex int, pageSize int, msg string) {
-	var res page
-	res.List = result
-	res.Count = count
-	res.PageIndex = pageIndex
-	res.PageSize = pageSize
-	OK(c, res, msg)
+func Error(code int32, msg string, data any) Response {
+	return Response{Success: false, Code: code, Msg: msg, ResponseTime: time.Now().Format("2006-01-02T15:04:05-0700"), TraceId: threadlocal.GetTraceId(), Data: data}
 }
 
-func GenerateMsgIDFromContext(c iris.Context) string {
-	return c.Values().GetString("__trace_id")
+func Page(total int64, data []any, pageNum, pageSize, pages, size int32) PageResponse {
+	return PageResponse{Total: total, Data: data, PageNum: pageNum, PageSize: pageSize, Pages: pages, Size: size}
 }

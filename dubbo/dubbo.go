@@ -116,18 +116,13 @@ func (t traceIdFilter) Invoke(ctx context.Context, invoker protocol.Invoker, inv
 	if ok {
 		traceId = filterVal
 	} else {
-		if threadlocal.TraceId.Get() != nil {
-			v := threadlocal.TraceId.Get()
-			if v != nil {
-				traceId = v.(string)
-			}
-		}
+		traceId = threadlocal.GetTraceId()
 	}
 	if traceId == "<nil>" {
 		traceId = uuid.New().String()
 	}
 	invocation.SetAttachment(traceIdKey, traceId)
-	threadlocal.TraceId.Set(traceId)
+	threadlocal.SetTraceId(traceId)
 	zlog.Info("Dubbo接口开始 method Name = %s", invocation.MethodName())
 	return invoker.Invoke(ctx, invocation)
 }

@@ -1,7 +1,10 @@
 package redis
 
 import (
+	"context"
 	"github.com/go-redis/redis/v8"
+	"strconv"
+	"time"
 )
 
 type RootConfig struct {
@@ -27,4 +30,35 @@ func InitRedis(rc RootConfig) {
 
 func Cli() *redis.Client {
 	return client
+}
+
+func RateLimit(ctx context.Context, window, maxCnt int, key string) bool {
+	isExits := client.Exists(ctx, "EXISTS", key).Val()
+	timeStamp := time.Now().Unix()
+	if isExits == 0 {
+		client.LPush(ctx, key, timeStamp)
+		client.Expire(ctx, key, time.Duration(window)*time.Second)
+		return true
+	}
+	lens := client.LLen(ctx, key).Val()
+	end := 0
+	list := client.LRange(ctx, key, 0, lens).Val()
+	for i := int(lens - 1); i >= 0; i-- {
+		str := list[i]
+		oldStamp, _ := strconv.ParseInt(str, 10, 64)
+		if timeStamp-oldStamp < int64(window) {
+			end = i
+			break
+		}
+	}
+
+	client.LTrim(ctx, key, 0, int64(end))
+
+	if end+1 < maxCnt {
+		client.LPush(ctx, key, timeStamp)
+		client.Expire(ctx, key, time.Duration(window)*time.Second)
+		return true
+	}
+
+	return false
 }
