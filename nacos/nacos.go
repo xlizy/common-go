@@ -131,10 +131,12 @@ func getRemoteConfigContent(namespace, dataId string) string {
 		conStr = string(b)
 		resp.Body.Close()
 		if conStr != "" {
-			configVal[dataId] = conStr
-			config.ReadConfig(conStr, &BaseWebConfigVal)
-			for _, config := range listenConfigs {
-				LoadConfig(config)
+			if strings.Index(conStr, "config data not exist") != 0 {
+				configVal[dataId] = conStr
+				config.ReadConfig(conStr, &BaseWebConfigVal)
+				for _, config := range listenConfigs {
+					LoadConfig(config)
+				}
 			}
 		}
 	}
@@ -144,13 +146,18 @@ func getRemoteConfigContent(namespace, dataId string) string {
 func listenConfig(namespace, dataId string) {
 	for {
 		targetUrl := baseHost + "/nacos/v1/cs/configs/listener"
+		localContent := configVal[dataId]
 		m := md5.New()
-		m.Write([]byte(configVal[dataId]))
+		m.Write([]byte(localContent))
 		md5Val := hex.EncodeToString(m.Sum(nil))
 		dataStr := ""
 		dataStr += dataId + "%02"
 		dataStr += "DEFAULT_GROUP%02"
-		dataStr += md5Val + "%02"
+		if localContent != "" {
+			dataStr += md5Val + "%02"
+		} else {
+			dataStr += "" + "%02"
+		}
 		dataStr += namespace + "%01"
 		params := url.Values{}
 		params.Set("Listening-Configs", dataStr)
@@ -164,7 +171,7 @@ func listenConfig(namespace, dataId string) {
 			res := string(b)
 			if res != "" {
 				//这种格式说明配置变了
-				if strings.Count(res, "%02") == 3 {
+				if res != dataStr {
 					zlog.Info("nacos监听到namespace:%s,dataId:%s配置发生变化", namespace, dataId)
 					getRemoteConfigContent(namespace, dataId)
 				} else {
@@ -190,7 +197,7 @@ func GetAllConfig() map[string]string {
 
 func LoadConfig(out interface{}) {
 	for _, content := range configVal {
-		if content != "" {
+		if content != "" && strings.Index(content, "config data not exist") != 0 {
 			yaml.Unmarshal([]byte(content), out)
 		}
 	}

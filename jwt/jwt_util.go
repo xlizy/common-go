@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	key = "FxH4OkoAAHRtldFPn1FuXD3Gc7qlh25p"
+	defaultKey = "EcALispjpvf4JrsucfmNtOGQkSni6kDU08aYLfmRHoCXn6M93Nj3wJMSxv2H3E0TvF85oVnpDKswtuFR1R8UF7rXzRe8SMoZv93XPqZCcM0I8ZpnDLZRCKBbz9NOgpCA"
 )
 
 type Payload struct {
-	Id     int64
-	Roles  string
+	IdMask string
+	Roles  []string
 	Expire string
 }
 type PayloadClaims struct {
@@ -20,8 +20,13 @@ type PayloadClaims struct {
 	gJwt.RegisteredClaims
 }
 
-func GenJwt(payload Payload) string {
-	payload.Expire = time.Now().Add(24 * time.Hour).Format("2006-01-02T15:04:05-0700")
+func GenJwt(payload Payload, key string) string {
+	if key == "" {
+		key = defaultKey
+	}
+	if payload.Expire == "" {
+		payload.Expire = time.Now().Add(24 * time.Hour).Format("2006-01-02T15:04:05-0700")
+	}
 	// 创建Token结构体
 	claims := gJwt.NewWithClaims(gJwt.SigningMethodHS256, PayloadClaims{
 		Payload: payload,
@@ -34,7 +39,10 @@ func GenJwt(payload Payload) string {
 	return signingString
 }
 
-func GetPayload(signingString string) Payload {
+func GetPayload(signingString, key string) Payload {
+	if key == "" {
+		key = defaultKey
+	}
 	// 根据Token字符串解析成Claims结构体
 	claims, err := gJwt.ParseWithClaims(signingString, &PayloadClaims{}, func(token *gJwt.Token) (interface{}, error) {
 		return []byte(key), nil

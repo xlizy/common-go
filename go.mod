@@ -7,6 +7,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
+	github.com/xlizy/rpc-interface v0.0.2
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.0
 	github.com/timandy/routine v1.1.1
