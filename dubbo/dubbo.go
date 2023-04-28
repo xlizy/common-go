@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	commonConfig "github.com/xlizy/common-go/config"
 	"github.com/xlizy/common-go/const/threadlocal"
+	"github.com/xlizy/common-go/json"
 	"github.com/xlizy/common-go/zlog"
 	"math/rand"
 	"strconv"
@@ -123,12 +124,12 @@ func (t traceIdFilter) Invoke(ctx context.Context, invoker protocol.Invoker, inv
 	}
 	invocation.SetAttachment(traceIdKey, traceId)
 	threadlocal.SetTraceId(traceId)
-	zlog.Info("Dubbo接口开始 method Name = %s", invocation.MethodName())
+	zlog.Info("dubbo-call-start,methodName:{},invocation:{}", invocation.MethodName(), json.ToJsonStr(invocation))
 	return invoker.Invoke(ctx, invocation)
 }
 
 func (t traceIdFilter) OnResponse(ctx context.Context, result protocol.Result, invoker protocol.Invoker, invocation protocol.Invocation) protocol.Result {
-	zlog.Info("Dubbo接口结束")
+	zlog.Info("dubbo-call-end,response:{}", json.ToJsonStr(result))
 	return result
 }
 

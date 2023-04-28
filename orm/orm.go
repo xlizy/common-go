@@ -1,8 +1,12 @@
 package orm
 
 import (
+	"github.com/xlizy/common-go/zlog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -21,8 +25,31 @@ type OrmConfig struct {
 var _primaryDb *gorm.DB
 var _multiDb map[string]*gorm.DB
 
+var wd = ""
+
+type ormLoggerWriter struct {
+	logger.Writer
+}
+
+func (w ormLoggerWriter) Printf(template string, args ...interface{}) {
+	if len(args) > 0 {
+		args[0] = strings.Replace(args[0].(string), wd+"/", "", 1)
+	}
+	template = strings.Replace(template, "\n", " ", -1)
+	zlog.Info(template, args...)
+}
+
 // InitOrm 初始化数据源
 func InitOrm(rc RootConfig) {
+	wd, _ = os.Getwd()
+	newLogger := logger.New(
+		&ormLoggerWriter{},
+		logger.Config{
+			SlowThreshold: 1 * time.Minute,
+			LogLevel:      logger.Info,
+			Colorful:      false,
+		},
+	)
 	if rc.Multi != nil && len(rc.Multi) > 0 {
 		for key, _config := range rc.Multi {
 			var err error
@@ -44,7 +71,7 @@ func InitOrm(rc RootConfig) {
 		}
 	} else {
 		var err error
-		db, err := gorm.Open(mysql.Open(rc.Orm.Dsn), &gorm.Config{})
+		db, err := gorm.Open(mysql.Open(rc.Orm.Dsn), &gorm.Config{PrepareStmt: true, Logger: newLogger})
 		if err != nil {
 			panic(err)
 		}

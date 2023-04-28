@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -43,7 +44,7 @@ func InitLogger(path string) {
 // core 三个参数之  Encoder 编码
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewDevelopmentEncoderConfig()
-	encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	//encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoderConfig.EncodeTime = timeEncoder
 	encoderConfig.EncodeCaller = customCallerEncoder
 	return zapcore.NewConsoleEncoder(encoderConfig)
@@ -84,17 +85,21 @@ func appendTraceId() string {
 }
 
 func Debug(template string, args ...interface{}) {
-	SLog.Debugf(template, args...)
+	SLog.Debugf(replace(template), args...)
 }
 
 func Info(template string, args ...interface{}) {
-	SLog.Infof(template, args...)
+	SLog.Infof(replace(template), args...)
 }
 
 func Warn(template string, args ...interface{}) {
-	SLog.Warnf(template, args...)
+	SLog.Warnf(replace(template), args...)
 }
 
 func Error(template string, args ...interface{}) {
-	SLog.Errorf(template, args...)
+	SLog.Errorf(replace(template), args...)
+}
+
+func replace(template string) string {
+	return strings.Replace(template, "{}", "%v", -1)
 }

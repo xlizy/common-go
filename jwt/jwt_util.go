@@ -3,6 +3,7 @@ package jwt
 import (
 	"fmt"
 	gJwt "github.com/golang-jwt/jwt/v4"
+	constant "github.com/xlizy/common-go/const"
 	"time"
 )
 
@@ -25,7 +26,7 @@ func GenJwt(payload Payload, key string) string {
 		key = defaultKey
 	}
 	if payload.Expire == "" {
-		payload.Expire = time.Now().Add(24 * time.Hour).Format("2006-01-02T15:04:05-0700")
+		payload.Expire = time.Now().Add(24 * time.Hour).Format(constant.DataFormat)
 	}
 	// 创建Token结构体
 	claims := gJwt.NewWithClaims(gJwt.SigningMethodHS256, PayloadClaims{

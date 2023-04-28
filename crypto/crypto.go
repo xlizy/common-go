@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 )
 
+// 加密
 func AesEncryptECB(origDataStr, keyStr string) string {
 	origData := []byte(origDataStr)
 	key := []byte(keyStr)
@@ -23,6 +24,8 @@ func AesEncryptECB(origDataStr, keyStr string) string {
 	}
 	return base64.StdEncoding.EncodeToString(encrypted)
 }
+
+// 解密
 func AesDecryptECB(encryptedStr, keyStr string) string {
 	defer func() {
 		if err := recover(); err != nil {
@@ -41,7 +44,6 @@ func AesDecryptECB(encryptedStr, keyStr string) string {
 	if len(decrypted) > 0 {
 		trim = len(decrypted) - int(decrypted[len(decrypted)-1])
 	}
-
 
 	return string(decrypted[:trim])
 }

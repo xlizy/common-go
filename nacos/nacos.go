@@ -29,6 +29,7 @@ func InitNacos() {
 	baseHost = "http://" + cfg.Addr
 	loadRemoteConfigLight()
 	go instanceRegister()
+	AddListen(*config.AppSign)
 }
 
 // 注册服务实例
@@ -172,7 +173,7 @@ func listenConfig(namespace, dataId string) {
 			if res != "" {
 				//这种格式说明配置变了
 				if res != dataStr {
-					zlog.Info("nacos监听到namespace:%s,dataId:%s配置发生变化", namespace, dataId)
+					zlog.Info("nacos监听到namespace:{}},dataId:{}配置发生变化", namespace, dataId)
 					getRemoteConfigContent(namespace, dataId)
 				} else {
 					//这种说明配置中心可能还没有这个配置文件
