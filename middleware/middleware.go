@@ -9,6 +9,7 @@ import (
 	"github.com/xlizy/common-go/response"
 	"github.com/xlizy/common-go/zlog"
 	"runtime"
+	"strconv"
 )
 
 var TraceId = func(ctx *context.Context) {
@@ -38,7 +39,13 @@ var NeedLogin = func(ctx *context.Context) {
 	if userId == "" {
 		ctx.JSON(response.Error(common_error_type.NOT_LOGGED_IN, nil))
 	} else {
-		ctx.Next()
+		v, e := strconv.Atoi(userId)
+		if e == nil && v > 0 {
+			threadlocal.SetUserId(int64(v))
+			ctx.Next()
+		} else {
+			ctx.JSON(response.Error(common_error_type.NOT_LOGGED_IN, nil))
+		}
 	}
 }
 
@@ -58,15 +65,12 @@ var GobalRecover = func(ctx *context.Context) {
 				stacktrace += fmt.Sprintf("%s:%d\n", f, l)
 			}
 
-			errMsg := fmt.Sprintf("错误信息: %s", err)
-			// when stack finishes
-			logMessage := fmt.Sprintf("从错误中回复：('%s')\n", ctx.HandlerName())
-			logMessage += errMsg + "\n"
-			logMessage += fmt.Sprintf("\n%s", stacktrace)
-			// 打印错误日志
-			zlog.Error(logMessage)
+			errMsg := fmt.Sprintf("%s", err)
+			zlog.Info("异常Ctl入口:{}", ctx.HandlerName())
+			zlog.Info("ErrorInfo:{}", errMsg)
+			zlog.Info("ErrorStacktrace:{}", stacktrace)
 			// 返回错误信息
-			ctx.JSON(response.Error(common_error_type.SYSTEM_ERROR, logMessage))
+			ctx.JSON(response.Error(common_error_type.SYSTEM_ERROR, errMsg))
 			ctx.StatusCode(500)
 			ctx.StopExecution()
 		}

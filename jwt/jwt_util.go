@@ -40,7 +40,7 @@ func GenJwt(payload Payload, key string) string {
 	return signingString
 }
 
-func GetPayload(signingString, key string) Payload {
+func GetPayload(signingString, key string) (*Payload, error) {
 	if key == "" {
 		key = defaultKey
 	}
@@ -49,7 +49,7 @@ func GetPayload(signingString, key string) Payload {
 		return []byte(key), nil
 	})
 	if err != nil {
-		fmt.Println(err.Error())
+		return nil, err
 	}
-	return claims.Claims.(*PayloadClaims).Payload
+	return &claims.Claims.(*PayloadClaims).Payload, nil
 }

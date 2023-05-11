@@ -23,7 +23,7 @@ type OrmConfig struct {
 }
 
 var _primaryDb *gorm.DB
-var _multiDb map[string]*gorm.DB
+var _multiDb = make(map[string]*gorm.DB)
 
 var wd = ""
 

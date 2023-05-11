@@ -25,6 +25,7 @@ const (
 	URL_NOT_FOUND                 CommonErrorType = 1019
 	NOT_LOGGED_IN                 CommonErrorType = 1020
 	SYS_ERR_ENUM_ERROR            CommonErrorType = -1021
+	ACCESS_DENIED                 CommonErrorType = 1022
 	DEFAULT                       CommonErrorType = -1
 )
 
@@ -77,6 +78,8 @@ func (e CommonErrorType) Des() string {
 		return "登录状态异常,请重新登录后操作"
 	case SYS_ERR_ENUM_ERROR:
 		return "response枚举转换错误"
+	case ACCESS_DENIED:
+		return "拒绝访问"
 	case DEFAULT:
 		return "默认"
 	}
