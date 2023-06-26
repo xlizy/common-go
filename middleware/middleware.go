@@ -5,26 +5,31 @@ import (
 	"github.com/google/uuid"
 	"github.com/kataras/iris/v12/context"
 	"github.com/xlizy/common-go/const/threadlocal"
-	common_error_type "github.com/xlizy/common-go/enums/commonerrortype"
+	common_error "github.com/xlizy/common-go/enums/common_error"
 	"github.com/xlizy/common-go/response"
+	"github.com/xlizy/common-go/validator"
 	"github.com/xlizy/common-go/zlog"
 	"runtime"
-	"strconv"
 )
 
-var TraceId = func(ctx *context.Context) {
+var Default = func(ctx *context.Context) {
 	traceId := ctx.GetHeader("X-Request-Id")
 	if traceId == "" {
 		traceId = uuid.New().String()
 	}
 	threadlocal.SetTraceId(traceId)
+	userId := ctx.GetHeader("X-Request-UserId")
+	if userId != "" {
+		threadlocal.SetUserId(userId)
+	}
+	validator.TransInit(ctx)
 	ctx.Next()
 }
 
 var CrossDomain = func(ctx *context.Context) {
 	ctx.Header("Access-Control-Allow-Origin", ctx.Request().Header.Get("Origin"))
 	ctx.Header("Access-Control-Allow-Headers", "Content-Type,X-Request-Id,X-Request-Some")
-	ctx.Header("Access-Control-Allow-Methods", "*")
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE,PATCH,HEAD,TRACE")
 	ctx.Header("Access-Control-Allow-Credentials", "true")
 	ctx.Header("Access-Control-Max-Age", "7200")
 	if ctx.Request().Method == "OPTIONS" {
@@ -37,14 +42,13 @@ var CrossDomain = func(ctx *context.Context) {
 var NeedLogin = func(ctx *context.Context) {
 	userId := ctx.GetHeader("X-Request-UserId")
 	if userId == "" {
-		ctx.JSON(response.Error(common_error_type.NOT_LOGGED_IN, nil))
+		ctx.JSON(response.Error(common_error.NOT_LOGGED_IN, nil))
 	} else {
-		v, e := strconv.Atoi(userId)
-		if e == nil && v > 0 {
-			threadlocal.SetUserId(int64(v))
+		if userId != "" {
+			threadlocal.SetUserId(userId)
 			ctx.Next()
 		} else {
-			ctx.JSON(response.Error(common_error_type.NOT_LOGGED_IN, nil))
+			ctx.JSON(response.Error(common_error.NOT_LOGGED_IN, nil))
 		}
 	}
 }
@@ -70,7 +74,7 @@ var GobalRecover = func(ctx *context.Context) {
 			zlog.Info("ErrorInfo:{}", errMsg)
 			zlog.Info("ErrorStacktrace:{}", stacktrace)
 			// 返回错误信息
-			ctx.JSON(response.Error(common_error_type.SYSTEM_ERROR, errMsg))
+			ctx.JSON(response.Error(common_error.SYSTEM_ERROR, errMsg))
 			ctx.StatusCode(500)
 			ctx.StopExecution()
 		}

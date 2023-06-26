@@ -12,7 +12,9 @@ import (
 	"github.com/xlizy/common-go/json"
 	"github.com/xlizy/common-go/zlog"
 	"math/rand"
+	"net"
 	"strconv"
+	"time"
 
 	_ "dubbo.apache.org/dubbo-go/v3/cluster/cluster/failover"
 	_ "dubbo.apache.org/dubbo-go/v3/cluster/loadbalance/random"
@@ -74,9 +76,18 @@ func InitDubbo(services Services) {
 		Namespace:    nacosCfg.Namespace,
 		RegistryType: "interface",
 	}
+	port := ""
+	for i := 0; i < 10; i++ {
+		pi := rand.Intn(16383) + 49152
+		port = strconv.Itoa(pi)
+		zlog.Info("端口:{}", port)
+		if checkPort(port) {
+			break
+		}
+	}
 	rc.Protocols["tri"] = &config.ProtocolConfig{
 		Name: "tri",
-		Port: strconv.Itoa(rand.Intn(10000) + 40000),
+		Port: port,
 	}
 
 	check := false
@@ -135,4 +146,19 @@ func (t traceIdFilter) OnResponse(ctx context.Context, result protocol.Result, i
 
 func NewTraceIdFilter() filter.Filter {
 	return &traceIdFilter{}
+}
+
+// 检测端口
+func checkPort(port string) bool {
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:"+port, 3*time.Second)
+	if err != nil {
+		return true
+	} else {
+		if conn != nil {
+			conn.Close()
+			return false
+		} else {
+			return true
+		}
+	}
 }

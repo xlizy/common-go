@@ -2,9 +2,7 @@ module github.com/xlizy/common-go
 
 go 1.20
 
-replace (
-	github.com/xlizy/rpc-interface v0.0.2 => /Users/xlizy/XLIZY/workspace-go/rpc-interface
-)
+replace github.com/xlizy/rpc-interface v0.0.2 => /Users/xlizy/XLIZY/workspace-go/rpc-interface
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.5
@@ -12,6 +10,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
+	github.com/json-iterator/go v1.1.12
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/timandy/routine v1.1.1
@@ -73,7 +72,6 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/k0kubun/pp v3.0.1+incompatible // indirect
 	github.com/kataras/golog v0.1.8 // indirect
 	github.com/kataras/pio v0.0.11 // indirect

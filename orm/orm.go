@@ -53,7 +53,7 @@ func InitOrm(rc RootConfig) {
 	if rc.Multi != nil && len(rc.Multi) > 0 {
 		for key, _config := range rc.Multi {
 			var err error
-			_db, err := gorm.Open(mysql.Open(_config.Dsn), &gorm.Config{})
+			_db, err := gorm.Open(mysql.Open(_config.Dsn), &gorm.Config{PrepareStmt: true, Logger: newLogger})
 			if err != nil {
 				panic(err)
 			}

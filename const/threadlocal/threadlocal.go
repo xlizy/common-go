@@ -17,14 +17,14 @@ func GetTraceId() string {
 	}
 }
 
-func SetUserId(userId int64) {
+func SetUserId(userId string) {
 	userID.Set(userId)
 }
 
-func GetUserId() int64 {
+func GetUserId() string {
 	if userID.Get() != nil {
-		return userID.Get().(int64)
+		return userID.Get().(string)
 	} else {
-		return 0
+		return ""
 	}
 }

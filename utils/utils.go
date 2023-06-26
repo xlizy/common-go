@@ -5,9 +5,15 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net"
+	"net/http"
 	"reflect"
 	"strings"
+)
+
+const (
+	character1 = "1234567890poiuytrewqlkjhgfdsamnbvcxzOIUYTREWQLKJHGFDSAMNBVCXZ"
 )
 
 // GetLocalIp 获取本机IP
@@ -31,9 +37,9 @@ func GetLocalIp() string {
 }
 
 // Clone 浅克隆，可以克隆任意数据类型，对指针类型子元素无法克隆
-//获取类型：如果类型是指针类型，需要使用Elem()获取对象实际类型
-//获取实际值：如果值是指针类型，需要使用Elem()获取实际数据
-//说白了，Elem()就是获取反射数据的实际类型和实际值
+// 获取类型：如果类型是指针类型，需要使用Elem()获取对象实际类型
+// 获取实际值：如果值是指针类型，需要使用Elem()获取实际数据
+// 说白了，Elem()就是获取反射数据的实际类型和实际值
 func Clone(src interface{}) interface{} {
 	typ := reflect.TypeOf(src)
 	if typ.Kind() == reflect.Ptr { //如果是指针类型
@@ -79,22 +85,48 @@ func DeepCopy(dst, src interface{}) error {
 }
 
 func GetTypeByContentType(contentType string) string {
-	res:="unknow"
+	res := "unknow"
 	if contentType != "" {
 		contentType = strings.ToLower(contentType)
 		if contentType == "image/gif" {
 			contentType = "gif"
-		}else if contentType == "image/jpeg" {
+		} else if contentType == "image/jpeg" {
 			contentType = "jpeg"
-		}else if contentType == "image/pjpeg" {
+		} else if contentType == "image/pjpeg" {
 			contentType = "pjpeg"
-		}else if contentType == "image/png" {
+		} else if contentType == "image/png" {
 			contentType = "png"
-		}else if contentType == "image/svg+xml" {
+		} else if contentType == "image/svg+xml" {
 			contentType = "svg"
-		}else if contentType == "image/tiff" {
+		} else if contentType == "image/tiff" {
 			contentType = "tiff"
 		}
 	}
 	return res
+}
+
+func GenRandomStr(length int) string {
+	str := ""
+	for i := 0; i < length; i++ {
+		i := rand.Intn(len(character1))
+		str += character1[i : i+1]
+	}
+	return str
+}
+
+func RemoteIp(req *http.Request) string {
+	remoteAddr := req.RemoteAddr
+	if ip := req.Header.Get("X-Real-IP"); ip != "" {
+		remoteAddr = ip
+	} else if ip = req.Header.Get("X-Forwarded-For"); ip != "" {
+		remoteAddr = ip
+	} else {
+		remoteAddr, _, _ = net.SplitHostPort(remoteAddr)
+	}
+
+	if remoteAddr == "::1" {
+		remoteAddr = "127.0.0.1"
+	}
+
+	return remoteAddr
 }

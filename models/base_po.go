@@ -6,32 +6,32 @@ import (
 )
 
 type ControlBy struct {
-	CreatedBy int64 `json:"createdBy" gorm:"column:created_by;index;comment:创建者"`
-	UpdatedBy int64 `json:"updatedBy" gorm:"column:updated_by;index;comment:更新者"`
+	CreatedBy string `json:"createdBy" gorm:"column:created_by;index;comment:创建者"`
+	UpdatedBy string `json:"updatedBy" gorm:"column:updated_by;index;comment:更新者"`
 }
 
 // SetCreatedBy 设置创建人id
-func (e *ControlBy) SetCreatedBy(createdBy int64) {
+func (e *ControlBy) SetCreatedBy(createdBy string) {
 	e.CreatedBy = createdBy
 }
 
 // SetUpdatedBy 设置修改人id
-func (e *ControlBy) SetUpdatedBy(updatedBy int64) {
+func (e *ControlBy) SetUpdatedBy(updatedBy string) {
 	e.UpdatedBy = updatedBy
 }
 
 type PrimaryKey struct {
-	Id int64 `json:"id" gorm:"primaryKey;comment:主键编码"`
+	Id string `json:"id" gorm:"primaryKey;comment:主键编码" url:"id"`
 }
 
 // SetPrimaryKey 主键
-func (e *PrimaryKey) SetPrimaryKey(primaryKey int64) {
+func (e *PrimaryKey) SetPrimaryKey(primaryKey string) {
 	e.Id = primaryKey
 }
 
 type ModelTime struct {
-	CreatedAt time.Time `json:"created_time" gorm:"column:created_time;comment:创建时间"`
-	UpdatedAt time.Time `json:"updated_time" gorm:"column:updated_time;comment:最后更新时间"`
+	CreatedAt time.Time `json:"createdTime" gorm:"column:created_time;comment:创建时间" url:"createdTime"`
+	UpdatedAt time.Time `json:"updatedTime" gorm:"column:updated_time;comment:最后更新时间" url:"updatedTime"`
 }
 
 type ActiveRecord interface {
