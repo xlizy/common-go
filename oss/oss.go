@@ -41,3 +41,14 @@ func UploadForFile(key string, reader io.Reader, bucketName string) error {
 	}
 	return bucket.PutObject(key, reader)
 }
+
+func DeleteOSSFile(key, bucketName string) {
+	if bucketName == "" {
+		bucketName = defaultBucketName
+	}
+	bucket, err := client.Bucket(bucketName)
+	if err != nil {
+		zlog.Error("初始化OSS-bucket异常", err)
+	}
+	_ = bucket.DeleteObject(key)
+}

@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 	"net"
 	"net/http"
 	"reflect"
@@ -89,17 +89,17 @@ func GetTypeByContentType(contentType string) string {
 	if contentType != "" {
 		contentType = strings.ToLower(contentType)
 		if contentType == "image/gif" {
-			contentType = "gif"
+			res = "gif"
 		} else if contentType == "image/jpeg" {
-			contentType = "jpeg"
+			res = "jpeg"
 		} else if contentType == "image/pjpeg" {
-			contentType = "pjpeg"
+			res = "pjpeg"
 		} else if contentType == "image/png" {
-			contentType = "png"
+			res = "png"
 		} else if contentType == "image/svg+xml" {
-			contentType = "svg"
+			res = "svg"
 		} else if contentType == "image/tiff" {
-			contentType = "tiff"
+			res = "tiff"
 		}
 	}
 	return res
@@ -108,7 +108,7 @@ func GetTypeByContentType(contentType string) string {
 func GenRandomStr(length int) string {
 	str := ""
 	for i := 0; i < length; i++ {
-		i := rand.Intn(len(character1))
+		i := rand.IntN(len(character1))
 		str += character1[i : i+1]
 	}
 	return str
@@ -129,4 +129,56 @@ func RemoteIp(req *http.Request) string {
 	}
 
 	return remoteAddr
+}
+
+func StructToMap(obj interface{}, tagName string) map[string]interface{} {
+	if tagName == "" {
+		tagName = "json"
+	}
+	result := make(map[string]interface{})
+	value := reflect.ValueOf(obj).Elem() // 获取指针的值
+	typ := value.Type()                  // 获取类型信息
+
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)         // 获取字段信息
+		tag := field.Tag.Get(tagName) // 获取标签（如果有）
+		if field.Anonymous {
+			for j := 0; j < value.Field(i).Type().NumField(); j++ {
+				field_an := value.Field(i).Type().Field(j)
+				tag_an := field_an.Tag.Get(tagName)
+				if tag_an != "" && !field_an.Anonymous { // 只处理非匿名字段且有标签的情况
+					key_an := field_an.Name // 默认使用字段名作为Key
+					if tag_an != "-" {      // 若标签不等于-则使用标签作为Key
+						key_an = tag_an
+						if tagName == "gorm" {
+							tmp_an := strings.Split(tag_an, ";")
+							for k := range tmp_an {
+								if strings.HasPrefix(tmp_an[k], "column:") {
+									key_an = strings.ReplaceAll(tmp_an[k], "column:", "")
+								}
+							}
+						}
+					}
+					result[key_an] = value.Field(i).Field(j).Interface() // 存入Map
+				}
+			}
+		}
+		if tag != "" && !field.Anonymous { // 只处理非匿名字段且有标签的情况
+			key := field.Name // 默认使用字段名作为Key
+			if tag != "-" {   // 若标签不等于-则使用标签作为Key
+				key = tag
+				if tagName == "gorm" {
+					tmp := strings.Split(tag, ";")
+					for i := range tmp {
+						if strings.HasPrefix(tmp[i], "column:") {
+							key = strings.ReplaceAll(tmp[i], "column:", "")
+						}
+					}
+				}
+			}
+			result[key] = value.Field(i).Interface() // 存入Map
+		}
+	}
+
+	return result
 }

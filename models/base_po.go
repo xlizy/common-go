@@ -21,7 +21,7 @@ func (e *ControlBy) SetUpdatedBy(updatedBy string) {
 }
 
 type PrimaryKey struct {
-	Id string `json:"id" gorm:"primaryKey;comment:主键编码" url:"id"`
+	Id string `json:"id" gorm:"column:id;primaryKey;comment:主键编码" url:"id"`
 }
 
 // SetPrimaryKey 主键

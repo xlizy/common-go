@@ -1,20 +1,26 @@
 module github.com/xlizy/common-go
 
-go 1.20
+go 1.22
 
-replace github.com/xlizy/rpc-interface v0.0.2 => /Users/xlizy/XLIZY/workspace-go/rpc-interface
+toolchain go1.22.1
+
+//replace github.com/xlizy/rpc-interface v0.0.3 => /Users/lixiaolong/XLIZY/workspace-go/rpc-interface
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.0.5
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
+	github.com/go-playground/locales v0.14.0
+	github.com/go-playground/universal-translator v0.18.0
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
 	github.com/json-iterator/go v1.1.12
 	github.com/kataras/iris/v12 v12.2.0
+	github.com/nsqio/go-nsq v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/timandy/routine v1.1.1
-	github.com/xlizy/rpc-interface v0.0.2
+	github.com/xlizy/rpc-interface v0.0.3
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.7.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -54,9 +60,6 @@ require (
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
-	github.com/go-playground/locales v0.14.0 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect

@@ -2,35 +2,54 @@ package main
 
 import (
 	"fmt"
-	"github.com/xlizy/common-go/enums/enabled"
-	"github.com/xlizy/common-go/json"
-	"time"
+	"github.com/xlizy/common-go/models"
+	"math/rand/v2"
 )
 
+var Cnt = 0
+
 type Test struct {
-	Id      int64           `json:"id"`
-	Name    string          `json:"name"`
-	Enable  enabled.Enabled `json:"enable" enum:"true"`
-	RegTime time.Time       `json:"regTime"`
+	models.PrimaryKey
+	Key string `json:"key" gorm:"column:key_value"`
+	models.ControlBy
+	models.ModelTime
 }
 
 func main() {
-	t := Test{
-		Id:   1,
-		Name: "xlizy",
+	gg := 0
+	mm := 0
+	t1 := 0
+	t2 := 0
+	t3 := 0
+	for i := 0; i < 1000000; i++ {
+		t1 = t1 + 1
+		r1 := rand.IntN(2)
+		if r1 == 0 {
+			gg = gg + 1
+		}
+		if r1 == 1 {
+			t2 = t2 + 1
+			mm = mm + 1
+			r2 := rand.IntN(2)
+			if r2 == 0 {
+				gg = gg + 1
+			}
+			if r2 == 1 {
+				t3 = t3 + 1
+				mm = mm + 1
+				r3 := rand.IntN(2)
+				if r3 == 0 {
+					gg = gg + 1
+				}
+				if r3 == 0 {
+					mm = mm + 1
+				}
+			}
+		}
 	}
-	fmt.Println(json.ToJsonStr(t))
-	fmt.Println(json.ToJsonStr(t.RegTime))
-	fmt.Println(json.ToJsonStr(t.RegTime.Unix()))
-	fmt.Println(t.RegTime.Unix())
-	fmt.Println(t.RegTime.UnixMilli())
-	fmt.Println(t.RegTime.UnixMicro())
-	fmt.Println(t.RegTime.UnixNano())
-	b := time.Time{}
-	fmt.Println("---------")
-	fmt.Println(b.Unix())
-	fmt.Println(b.UnixMilli())
-	fmt.Println(b.UnixMicro())
-	fmt.Println(b.UnixNano())
-	fmt.Println(t.RegTime.Equal(b))
+	fmt.Println("gg:", gg)
+	fmt.Println("mm:", mm)
+	fmt.Println("t1:", t1)
+	fmt.Println("t2:", t2)
+	fmt.Println("t3:", t3)
 }

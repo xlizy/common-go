@@ -10,17 +10,18 @@ import (
 )
 
 type Response struct {
-	Success      bool   `json:"success"`
-	Code         int32  `json:"code"`
-	Msg          string `json:"msg,omitempty"`
-	ResponseTime string `json:"responseTime,omitempty"`
-	TraceId      string `json:"traceId,omitempty"`
-	Data         any    `json:"data,omitempty"`
+	Success      bool              `json:"success"`
+	Code         int32             `json:"code"`
+	Msg          string            `json:"msg,omitempty"`
+	ResponseTime string            `json:"responseTime,omitempty"`
+	TraceId      string            `json:"traceId,omitempty"`
+	Data         any               `json:"data,omitempty"`
+	Extend       map[string]string `json:"extend,omitempty"`
 }
 
 type PageResponse struct {
 	Total    int64 `json:"total"`
-	Data     any `json:"data"`
+	Data     any   `json:"data"`
 	PageNum  int   `json:"pageNum"`
 	PageSize int   `json:"pageSize"`
 	Pages    int   `json:"pages"`
@@ -29,6 +30,10 @@ type PageResponse struct {
 
 func Success(msg string, data any) Response {
 	return Response{Success: true, Code: 0, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data}
+}
+
+func SuccessCus(msg string, data any, extend map[string]string) Response {
+	return Response{Success: true, Code: 0, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data, Extend: extend}
 }
 
 func ErrorCus(code int32, msg string, data any) Response {

@@ -11,7 +11,7 @@ import (
 	"github.com/xlizy/common-go/const/threadlocal"
 	"github.com/xlizy/common-go/json"
 	"github.com/xlizy/common-go/zlog"
-	"math/rand"
+	"math/rand/v2"
 	"net"
 	"strconv"
 	"time"
@@ -78,7 +78,7 @@ func InitDubbo(services Services) {
 	}
 	port := ""
 	for i := 0; i < 10; i++ {
-		pi := rand.Intn(16383) + 49152
+		pi := rand.IntN(16383) + 49152
 		port = strconv.Itoa(pi)
 		zlog.Info("端口:{}", port)
 		if checkPort(port) {
