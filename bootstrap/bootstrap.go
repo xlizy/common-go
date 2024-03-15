@@ -2,7 +2,7 @@ package bootstrap
 
 import (
 	"github.com/xlizy/common-go/config"
-	"github.com/xlizy/common-go/nacos"
+	"github.com/xlizy/common-go/nacos/v2"
 	"github.com/xlizy/common-go/snowflake"
 	"github.com/xlizy/common-go/zlog"
 )

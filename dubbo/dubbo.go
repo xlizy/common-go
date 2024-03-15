@@ -6,6 +6,7 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/config"
 	"dubbo.apache.org/dubbo-go/v3/filter"
 	"dubbo.apache.org/dubbo-go/v3/protocol"
+	"dubbo.apache.org/dubbo-go/v3/registry/directory"
 	"github.com/google/uuid"
 	commonConfig "github.com/xlizy/common-go/config"
 	"github.com/xlizy/common-go/const/threadlocal"
@@ -66,8 +67,11 @@ func InitDubbo(services Services) {
 	extension.SetFilter("TraceIdFilter", NewTraceIdFilter)
 	rc := config.GetRootConfig()
 	rc.Logger = config.NewLoggerConfigBuilder().Build()
-	rc.Logger.ZapConfig.Level = "error"
-	rc.Logger.ZapConfig.OutputPaths = []string{commonConfig.GetLogCfg().Path}
+	rc.Logger.Level = "error"
+	rc.Logger.File = &config.File{
+		//Name:   "./logs/dubbo.log",
+		MaxAge: 30,
+	}
 
 	rc.Application.Name = commonConfig.GetNacosCfg().AppName
 	rc.Registries["nacos"] = &config.RegistryConfig{
@@ -76,6 +80,7 @@ func InitDubbo(services Services) {
 		Namespace:    nacosCfg.Namespace,
 		RegistryType: "interface",
 	}
+	extension.SetDirectory("nacos", directory.NewRegistryDirectory)
 	port := ""
 	for i := 0; i < 10; i++ {
 		pi := rand.IntN(16383) + 49152
