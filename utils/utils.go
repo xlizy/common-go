@@ -33,6 +33,11 @@ func GetLocalIp() string {
 			}
 		}
 	}
+	for _, ip := range ips {
+		if strings.HasPrefix(ip, "192.168.2") {
+			return ip
+		}
+	}
 	return ips[0]
 }
 

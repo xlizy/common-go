@@ -2,6 +2,7 @@ package enabled
 
 import (
 	"github.com/xlizy/common-go/enums"
+	"github.com/xlizy/common-go/models"
 	"strconv"
 )
 
@@ -28,4 +29,12 @@ func (e Enabled) MarshalJSON() ([]byte, error) {
 		return enums.JsonObj(int(e), "FALSE", "未启用")
 	}
 	return []byte(strconv.Itoa(int(e))), nil
+}
+
+func (e Enabled) Enum() string {
+	return enums.BE(e).Enum
+}
+
+func SelectOptions() []models.SelectOptions {
+	return enums.SelectOptions([]any{TRUE, FALSE})
 }
