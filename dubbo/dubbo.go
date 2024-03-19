@@ -93,7 +93,7 @@ func InitDubbo(services Services) {
 	}
 	rc.Protocols["tri"] = &config.ProtocolConfig{
 		Name: "tri",
-		Ip:   utils.GetLocalIp(),
+		Ip:   utils.GetLocalPriorityIp(commonConfig.PriorityNetwork.Networks),
 		Port: port,
 	}
 

@@ -16,8 +16,8 @@ const (
 	character1 = "1234567890poiuytrewqlkjhgfdsamnbvcxzOIUYTREWQLKJHGFDSAMNBVCXZ"
 )
 
-// GetLocalIp 获取本机IP
-func GetLocalIp() string {
+// GetLocalPriorityIp 获取本机IP(根据规则优先选取IP)
+func GetLocalPriorityIp(priorityNetWork []string) string {
 	var ips []string
 	interfaceAddr, err := net.InterfaceAddrs()
 	if err != nil {
@@ -33,9 +33,33 @@ func GetLocalIp() string {
 			}
 		}
 	}
-	for _, ip := range ips {
-		if strings.HasPrefix(ip, "192.168.2") {
-			return ip
+	if len(priorityNetWork) > 0 {
+		for _, nk := range priorityNetWork {
+			for _, ip := range ips {
+				if strings.HasPrefix(ip, nk) {
+					return ip
+				}
+			}
+		}
+	}
+	return ips[0]
+}
+
+// GetLocalIp 获取本机IP
+func GetLocalIp() string {
+	var ips []string
+	interfaceAddr, err := net.InterfaceAddrs()
+	if err != nil {
+		fmt.Printf("fail to get net interface addrs: %v", err)
+		return ""
+	}
+
+	for _, address := range interfaceAddr {
+		ipNet, isValidIpNet := address.(*net.IPNet)
+		if isValidIpNet && !ipNet.IP.IsLoopback() {
+			if ipNet.IP.To4() != nil {
+				ips = append(ips, ipNet.IP.String())
+			}
 		}
 	}
 	return ips[0]

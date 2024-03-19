@@ -8,10 +8,10 @@ toolchain go1.22.1
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.1.1
-	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
+	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
-	github.com/go-playground/validator/v10 v10.12.0
+	github.com/go-playground/validator/v10 v10.19.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.5.0
@@ -54,6 +54,7 @@ require (
 	github.com/dubbogo/triple v1.2.2-rc3 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-co-op/gocron v1.9.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -79,7 +80,7 @@ require (
 	github.com/kataras/pio v0.0.13 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
-	github.com/leodido/go-urn v1.2.2 // indirect
+	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

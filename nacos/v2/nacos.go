@@ -58,6 +58,8 @@ func InitNacos() {
 	}
 
 	loadRemoteConfig(clientParam)
+	AddListen(*config.AppSign)
+	AddListen(*config.PriorityNetwork)
 	go instanceRegister(clientParam, cfg.AppName, cfg.AvailabilityCluster, cfg.Cluster)
 
 }
@@ -65,7 +67,7 @@ func InitNacos() {
 func instanceRegister(clientParam vo.NacosClientParam, appName, availabilityCluster, cluster string) {
 
 	for {
-		address := net.JoinHostPort(utils.GetLocalIp(), config.BootConfig.HttpPort)
+		address := net.JoinHostPort(utils.GetLocalPriorityIp(config.PriorityNetwork.Networks), config.BootConfig.HttpPort)
 		// 3 秒超时
 		conn, err := net.DialTimeout("tcp", address, 3*time.Second)
 		if err != nil {
@@ -89,7 +91,7 @@ func instanceRegister(clientParam vo.NacosClientParam, appName, availabilityClus
 		_namingClient = namingClient
 		port, _ := strconv.Atoi(config.BootConfig.HttpPort)
 		_, _ = namingClient.RegisterInstance(vo.RegisterInstanceParam{
-			Ip:          utils.GetLocalIp(),
+			Ip:          utils.GetLocalPriorityIp(config.PriorityNetwork.Networks),
 			Port:        uint64(port),
 			ServiceName: "http:" + appName,
 			Weight:      1,
