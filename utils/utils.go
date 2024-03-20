@@ -211,3 +211,12 @@ func StructToMap(obj interface{}, tagName string) map[string]interface{} {
 
 	return result
 }
+
+func GenSalt(length int) string {
+	salt := ""
+	for i := 0; i < length; i++ {
+		i := rand.IntN(len(character1))
+		salt += character1[i : i+1]
+	}
+	return salt
+}

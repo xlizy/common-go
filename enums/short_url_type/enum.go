@@ -2,6 +2,7 @@ package short_url_type
 
 import (
 	"github.com/xlizy/common-go/enums"
+	"github.com/xlizy/common-go/models"
 	"strconv"
 )
 
@@ -34,4 +35,12 @@ func (e ShortUrlType) MarshalJSON() ([]byte, error) {
 		return enums.JsonObj(int(e), "TIME_LIMIT_AND_TIMES", "限时次数")
 	}
 	return []byte(strconv.Itoa(int(e))), nil
+}
+
+func (e ShortUrlType) Enum() string {
+	return enums.BE(e).Enum
+}
+
+func SelectOptions() []models.SelectOptions {
+	return enums.SelectOptions([]any{PERPETUAL, TIMES, TIME_LIMIT, TIME_LIMIT_AND_TIMES})
 }
