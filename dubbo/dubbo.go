@@ -56,6 +56,7 @@ type Service struct {
 	Name          string
 	InterfaceName string
 	Interface     interface{}
+	Weight        int
 }
 
 type Services struct {
@@ -105,18 +106,27 @@ func InitDubbo(services Services) {
 			Protocol:      "tri",
 			Check:         &check,
 			Retries:       "0",
-			Group:         "DEFAULT",
+			Group:         commonConfig.GetNacosCfg().Cluster,
 			Version:       "1.0.0",
 			Filter:        "TraceIdFilter",
+			Loadbalance:   "clusterWeightedRandomRobinLoadBalance",
 		}
 	}
 	for _, service := range services.Provider {
 		config.SetProviderService(service.Interface)
+		servicesParams := make(map[string]string)
+		if service.Weight <= 0 {
+			servicesParams["appWeight"] = "1"
+		} else {
+			servicesParams["appWeight"] = strconv.Itoa(service.Weight)
+		}
 		rc.Provider.Services[service.Name] = &config.ServiceConfig{
-			Interface: service.InterfaceName,
-			Group:     "DEFAULT",
-			Version:   "1.0.0",
-			Filter:    "TraceIdFilter",
+			Interface:   service.InterfaceName,
+			Group:       commonConfig.GetNacosCfg().Cluster,
+			Params:      servicesParams,
+			Version:     "1.0.0",
+			Filter:      "TraceIdFilter",
+			Loadbalance: "clusterWeightedRandomRobinLoadBalance",
 		}
 	}
 
