@@ -61,6 +61,7 @@ func InitNacos() {
 	}
 
 	loadRemoteConfig(clientParam)
+	AddListen(config.AppEnv)
 	AddListen(*config.AppSign)
 	AddListen(config.PriorityNetwork)
 	go instanceRegister(clientParam, cfg.AppName, cfg.AvailabilityCluster, cfg.Cluster)

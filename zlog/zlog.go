@@ -1,6 +1,7 @@
 package zlog
 
 import (
+	"fmt"
 	"github.com/xlizy/common-go/const/threadlocal"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -32,7 +33,7 @@ func init() {
 
 func InitLogger(path string) {
 	//获取编码器
-	encoder := getEncoder()
+	encoder := getJsonEncoder()
 	multiWriteSyncer := zapcore.NewMultiWriteSyncer(getWriterSyncer(path), zapcore.AddSync(os.Stdout))
 	core := zapcore.NewCore(encoder, multiWriteSyncer, zap.InfoLevel)
 	//生成Logger
@@ -43,11 +44,16 @@ func InitLogger(path string) {
 
 // core 三个参数之  Encoder 编码
 func getEncoder() zapcore.Encoder {
-	encoderConfig := zap.NewDevelopmentEncoderConfig()
-	//encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = timeEncoder
 	encoderConfig.EncodeCaller = customCallerEncoder
 	return zapcore.NewConsoleEncoder(encoderConfig)
+}
+
+func getJsonEncoder() zapcore.Encoder {
+	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig.EncodeTime = timeEncoder
+	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
 func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
@@ -85,21 +91,25 @@ func appendTraceId() string {
 }
 
 func Debug(template string, args ...interface{}) {
-	SLog.Debugf(replace(template), args...)
+	Log.With(zap.String("traceId", appendTraceId())).Debug(fmt.Sprintf(replace(template), args...))
 }
 
 func Info(template string, args ...interface{}) {
-	SLog.Infof(replace(template), args...)
+	Log.With(zap.String("traceId", appendTraceId())).Info(fmt.Sprintf(replace(template), args...))
 }
 
 func Warn(template string, args ...interface{}) {
-	SLog.Warnf(replace(template), args...)
+	Log.With(zap.String("traceId", appendTraceId())).Warn(fmt.Sprintf(replace(template), args...))
 }
 
 func Error(template string, args ...interface{}) {
-	SLog.Errorf(replace(template), args...)
+	Log.With(zap.String("traceId", appendTraceId())).Error(fmt.Sprintf(replace(template), args...))
+}
+
+func replaceOld(template string) string {
+	return strings.Replace(template, "{}", "%v", -1)
 }
 
 func replace(template string) string {
-	return strings.Replace(template, "{}", "%v", -1)
+	return strings.Replace(template, "{}", "%s", -1)
 }

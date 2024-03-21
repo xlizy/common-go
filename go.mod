@@ -20,6 +20,8 @@ require (
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.2
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/captcha v1.0.881
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.881
 	github.com/timandy/routine v1.1.1
 	github.com/xlizy/rpc-interface v0.0.3
 	go.uber.org/zap v1.24.0

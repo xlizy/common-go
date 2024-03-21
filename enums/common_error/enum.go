@@ -31,6 +31,7 @@ const (
 	NOT_LOGGED_IN                 CommonError = 1020
 	SYS_ERR_ENUM_ERROR            CommonError = -1021
 	ACCESS_DENIED                 CommonError = 1022
+	CALL_CAPTCHA_ERROR            CommonError = 1023
 	DEFAULT                       CommonError = -1
 )
 
@@ -57,7 +58,7 @@ func (e CommonError) MarshalJSON() ([]byte, error) {
 	case VER_CODE_EXPIRED:
 		return enums.JsonObj(int(e), "VER_CODE_EXPIRED", "验证码已过期")
 	case SMART_VERIFICATION_ERROR:
-		return enums.JsonObj(int(e), "SMART_VERIFICATION_ERROR", "智能验证失败")
+		return enums.JsonObj(int(e), "SMART_VERIFICATION_ERROR", "行为验证失败")
 	case PARAMETER_MISSING:
 		return enums.JsonObj(int(e), "PARAMETER_MISSING", "参数缺失")
 	case VER_CODE_IS_USED:
@@ -88,6 +89,8 @@ func (e CommonError) MarshalJSON() ([]byte, error) {
 		return enums.JsonObj(int(e), "SYS_ERR_ENUM_ERROR", "response枚举转换错误")
 	case ACCESS_DENIED:
 		return enums.JsonObj(int(e), "ACCESS_DENIED", "拒绝访问")
+	case CALL_CAPTCHA_ERROR:
+		return enums.JsonObj(int(e), "CALL_CAPTCHA_ERROR", "调用验证码服务异常")
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
