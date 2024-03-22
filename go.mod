@@ -4,7 +4,7 @@ go 1.22
 
 toolchain go1.22.1
 
-//replace github.com/xlizy/rpc-interface v0.0.7 => /Users/lixiaolong/XLIZY/workspace-go/rpc-interface
+//replace github.com/xlizy/rpc-interface v0.0.8 => /Users/lixiaolong/XLIZY/workspace-go/rpc-interface
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.1.1
@@ -22,7 +22,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/captcha v1.0.881
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.881
 	github.com/timandy/routine v1.1.1
-	github.com/xlizy/rpc-interface v0.0.7
+	github.com/xlizy/rpc-interface v0.0.8
 	go.etcd.io/etcd/client/v3 v3.5.7
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.21.0
@@ -66,7 +66,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/mock v1.6.0 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20231222211730-1d6d20845b47 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
@@ -139,6 +139,7 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto v0.0.0-20240123012728-ef4313101c80 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240123012728-ef4313101c80 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240123012728-ef4313101c80 // indirect
 	google.golang.org/grpc v1.62.1 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
