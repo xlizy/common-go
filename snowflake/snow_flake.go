@@ -2,7 +2,6 @@ package snowflake
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"github.com/xlizy/common-go/utils"
 	"github.com/xlizy/common-go/zlog"
 	"strconv"
@@ -34,7 +33,7 @@ type SnowFlake struct {
 var s = &SnowFlake{}
 
 // Init 初始化
-func Init(centerId, workerId int64) error {
+func Init(centerId, workerId int64) {
 	s.epoch = int64(1636373513000) //设置起始时间戳：2021-11-08 20:11:53
 	s.centerId = centerId
 	s.workerId = workerId
@@ -57,10 +56,10 @@ func Init(centerId, workerId int64) error {
 
 	// 参数校验
 	if int(centerId) > maxCenterId || centerId < 0 {
-		return errors.New(fmt.Sprintf("Center ID can't be greater than %d or less than 0", maxCenterId))
+		zlog.Error("Center ID can't be greater than {} or less than 0", maxCenterId)
 	}
 	if int(workerId) > maxWorkerId || workerId < 0 {
-		return errors.New(fmt.Sprintf("Worker ID can't be greater than %d or less than 0", maxWorkerId))
+		zlog.Error("Worker ID can't be greater than {} or less than 0", maxWorkerId)
 	}
 
 	s.sequenceBits = 12 // 序列在ID中占的位数,最大为4095
@@ -71,8 +70,6 @@ func Init(centerId, workerId int64) error {
 	s.workerIdShift = s.sequenceBits                                    // 机器ID向左移12位
 	s.centerIdShift = s.sequenceBits + s.workerIdBits                   // 机房ID向左移18位
 	s.timestampShift = s.sequenceBits + s.workerIdBits + s.centerIdBits // 时间截向左移22位
-
-	return nil
 }
 
 func NextId() string {

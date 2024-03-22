@@ -11,35 +11,29 @@ import (
 	"time"
 )
 
-var Log *zap.Logger
-var SLog *zap.SugaredLogger
-
-var space map[int]string
+var _log *zap.Logger
+var _space map[int]string
 
 type Logger struct {
 	*zap.SugaredLogger
 }
 
-func init() {
-	space = make(map[int]string, 45)
+func InitLogger(path string) {
+	_space = make(map[int]string, 45)
 	for i := 0; i < 45; i++ {
 		v := ""
 		for j := 0; j < i; j++ {
 			v += " "
 		}
-		space[i] = v
+		_space[i] = v
 	}
-}
-
-func InitLogger(path string) {
 	//获取编码器
 	encoder := getJsonEncoder()
 	multiWriteSyncer := zapcore.NewMultiWriteSyncer(getWriterSyncer(path), zapcore.AddSync(os.Stdout))
 	core := zapcore.NewCore(encoder, multiWriteSyncer, zap.InfoLevel)
 	//生成Logger
-	Log = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zap.ErrorLevel))
-	SLog = Log.Sugar()
-	defer Log.Sync()
+	_log = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zap.ErrorLevel))
+	defer _log.Sync()
 }
 
 // core 三个参数之  Encoder 编码
@@ -65,13 +59,12 @@ func customCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayE
 	path := caller.TrimmedPath()
 	formatLen := 35
 	if len(path) < formatLen {
-		path += space[formatLen-len(path)]
+		path += _space[formatLen-len(path)]
 	}
 	enc.AppendString("[" + path + "]")
 }
 
 func getWriterSyncer(path string) zapcore.WriteSyncer {
-	//file, _ := os.Create("/Users/xlizy/XLIZY/workspace-go/logs/log.log")
 	lumberWriteSyncer := &lumberjack.Logger{
 		Filename:   path,
 		MaxSize:    30, // megabytes
@@ -91,19 +84,19 @@ func appendTraceId() string {
 }
 
 func Debug(template string, args ...interface{}) {
-	Log.With(zap.String("traceId", appendTraceId())).Debug(fmt.Sprintf(replace(template), args...))
+	_log.With(zap.String("traceId", appendTraceId())).Debug(fmt.Sprintf(replace(template), args...))
 }
 
 func Info(template string, args ...interface{}) {
-	Log.With(zap.String("traceId", appendTraceId())).Info(fmt.Sprintf(replace(template), args...))
+	_log.With(zap.String("traceId", appendTraceId())).Info(fmt.Sprintf(replace(template), args...))
 }
 
 func Warn(template string, args ...interface{}) {
-	Log.With(zap.String("traceId", appendTraceId())).Warn(fmt.Sprintf(replace(template), args...))
+	_log.With(zap.String("traceId", appendTraceId())).Warn(fmt.Sprintf(replace(template), args...))
 }
 
 func Error(template string, args ...interface{}) {
-	Log.With(zap.String("traceId", appendTraceId())).Error(fmt.Sprintf(replace(template), args...))
+	_log.With(zap.String("traceId", appendTraceId())).Error(fmt.Sprintf(replace(template), args...))
 }
 
 func replaceOld(template string) string {

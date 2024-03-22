@@ -11,11 +11,11 @@ import (
 )
 
 type RootConfig struct {
-	Orm   OrmConfig             `yaml:"orm"`
-	Multi map[string]*OrmConfig `yaml:"orm-multi"`
+	Orm   ormConfig             `yaml:"orm"`
+	Multi map[string]*ormConfig `yaml:"orm-multi"`
 }
 
-type OrmConfig struct {
+type ormConfig struct {
 	Dsn             string        `yaml:"dsn"`
 	MaxOpen         int           `yaml:"max-open"`
 	MaxIdle         int           `yaml:"max-idle"`
@@ -39,8 +39,12 @@ func (w ormLoggerWriter) Printf(template string, args ...interface{}) {
 	zlog.Info(template, args...)
 }
 
+func NewConfig() *RootConfig {
+	return &RootConfig{}
+}
+
 // InitOrm 初始化数据源
-func InitOrm(rc RootConfig) {
+func InitOrm(rc *RootConfig) {
 	wd, _ = os.Getwd()
 	newLogger := logger.New(
 		&ormLoggerWriter{},
@@ -55,9 +59,11 @@ func InitOrm(rc RootConfig) {
 			var err error
 			_db, err := gorm.Open(mysql.Open(_config.Dsn), &gorm.Config{PrepareStmt: true, Logger: newLogger})
 			if err != nil {
+				zlog.Error("连接Mysql异常:{}", err)
 				panic(err)
 			}
 			if _db.Error != nil {
+				zlog.Error("连接Mysql异常:{}", _db.Error.Error())
 				panic(_db.Error)
 			}
 			sqlDB, _ := _db.DB()
@@ -73,9 +79,11 @@ func InitOrm(rc RootConfig) {
 		var err error
 		db, err := gorm.Open(mysql.Open(rc.Orm.Dsn), &gorm.Config{PrepareStmt: true, Logger: newLogger})
 		if err != nil {
+			zlog.Error("连接Mysql异常:{}", err)
 			panic(err)
 		}
 		if db.Error != nil {
+			zlog.Error("连接Mysql异常:{}", db.Error.Error())
 			panic(db.Error)
 		}
 		sqlDB, _ := db.DB()

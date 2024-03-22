@@ -7,35 +7,40 @@ import (
 )
 
 type RootConfig struct {
-	Config OSSConfig `yaml:"oss"`
+	Config ossConfig `yaml:"oss"`
 }
 
-type OSSConfig struct {
+type ossConfig struct {
 	Endpoint          string `yaml:"endpoint"`
 	AccessKeyId       string `yaml:"accessKeyId"`
 	AccessKeySecret   string `yaml:"accessKeySecret"`
 	DefaultBucketName string `yaml:"defaultBucketName"`
 }
 
-var defaultBucketName = ""
+var _defaultBucketName = ""
 
-var client *oss.Client
+var _client *oss.Client
 
-func InitOSS(rc RootConfig) {
+func NewConfig() *RootConfig {
+	return &RootConfig{}
+}
+
+func InitOSS(rc *RootConfig) {
 	cfg := rc.Config
-	defaultBucketName = cfg.DefaultBucketName
-	_client, err := oss.New(cfg.Endpoint, cfg.AccessKeyId, cfg.AccessKeySecret)
+	_defaultBucketName = cfg.DefaultBucketName
+	c, err := oss.New(cfg.Endpoint, cfg.AccessKeyId, cfg.AccessKeySecret)
 	if err != nil {
+		zlog.Error("初始化OSS异常:{}", err.Error())
 		panic(err)
 	}
-	client = _client
+	_client = c
 }
 
 func UploadForFile(key string, reader io.Reader, bucketName string) error {
 	if bucketName == "" {
-		bucketName = defaultBucketName
+		bucketName = _defaultBucketName
 	}
-	bucket, err := client.Bucket(bucketName)
+	bucket, err := _client.Bucket(bucketName)
 	if err != nil {
 		zlog.Error("初始化OSS-bucket异常", err)
 	}
@@ -44,9 +49,9 @@ func UploadForFile(key string, reader io.Reader, bucketName string) error {
 
 func DeleteOSSFile(key, bucketName string) {
 	if bucketName == "" {
-		bucketName = defaultBucketName
+		bucketName = _defaultBucketName
 	}
-	bucket, err := client.Bucket(bucketName)
+	bucket, err := _client.Bucket(bucketName)
 	if err != nil {
 		zlog.Error("初始化OSS-bucket异常", err)
 	}

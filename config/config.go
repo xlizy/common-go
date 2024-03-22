@@ -37,12 +37,12 @@ func init() {
 	dataBytes, err := os.ReadFile("bootstrap.yml")
 	if err != nil {
 		fmt.Println("读取文件失败：", err)
-		return
+		panic(err)
 	}
 	err = yaml.Unmarshal(dataBytes, BootConfig)
 	if err != nil {
 		fmt.Println("解析 yaml 文件失败：", err)
-		return
+		panic(err)
 	}
 	if BootConfig.Nacos.Namespace == "" {
 		BootConfig.Nacos.Namespace = os.Getenv("NACOS_NAMESPACE")

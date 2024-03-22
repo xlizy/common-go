@@ -8,20 +8,24 @@ import (
 )
 
 type RootConfig struct {
-	Config RedisConfig `yaml:"redis"`
+	Config redisConfig `yaml:"redis"`
 }
 
-type RedisConfig struct {
+type redisConfig struct {
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
 }
 
-var client *redis.Client
+var _client *redis.Client
 
-func InitRedis(rc RootConfig) {
+func NewConfig() *RootConfig {
+	return &RootConfig{}
+}
+
+func InitRedis(rc *RootConfig) {
 	// 初始化一个新的redis client
-	client = redis.NewClient(&redis.Options{
+	_client = redis.NewClient(&redis.Options{
 		Addr:     rc.Config.Addr,     // redis地址
 		Password: rc.Config.Password, // redis没密码，没有设置，则留空
 		DB:       rc.Config.DB,       // 使用默认数据库
@@ -29,20 +33,20 @@ func InitRedis(rc RootConfig) {
 }
 
 func Cli() *redis.Client {
-	return client
+	return _client
 }
 
 func RateLimit(ctx context.Context, window, maxCnt int, key string) bool {
-	isExits := client.Exists(ctx, "EXISTS", key).Val()
+	isExits := _client.Exists(ctx, "EXISTS", key).Val()
 	timeStamp := time.Now().Unix()
 	if isExits == 0 {
-		client.LPush(ctx, key, timeStamp)
-		client.Expire(ctx, key, time.Duration(window)*time.Second)
+		_client.LPush(ctx, key, timeStamp)
+		_client.Expire(ctx, key, time.Duration(window)*time.Second)
 		return true
 	}
-	lens := client.LLen(ctx, key).Val()
+	lens := _client.LLen(ctx, key).Val()
 	end := 0
-	list := client.LRange(ctx, key, 0, lens).Val()
+	list := _client.LRange(ctx, key, 0, lens).Val()
 	for i := int(lens - 1); i >= 0; i-- {
 		str := list[i]
 		oldStamp, _ := strconv.ParseInt(str, 10, 64)
@@ -52,11 +56,11 @@ func RateLimit(ctx context.Context, window, maxCnt int, key string) bool {
 		}
 	}
 
-	client.LTrim(ctx, key, 0, int64(end))
+	_client.LTrim(ctx, key, 0, int64(end))
 
 	if end+1 < maxCnt {
-		client.LPush(ctx, key, timeStamp)
-		client.Expire(ctx, key, time.Duration(window)*time.Second)
+		_client.LPush(ctx, key, timeStamp)
+		_client.Expire(ctx, key, time.Duration(window)*time.Second)
 		return true
 	}
 

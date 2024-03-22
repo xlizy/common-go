@@ -9,10 +9,10 @@ import (
 )
 
 type RootConfig struct {
-	Config NSQConfig `yaml:"nsq"`
+	Config nsqConfig `yaml:"nsq"`
 }
 
-type NSQConfig struct {
+type nsqConfig struct {
 	NSQLookupdAddr     string `yaml:"lookupdAddr"`
 	NSQDAddr           string `yaml:"nsqdAddr"`
 	DefaultTopicPrefix string `yaml:"defaultTopicPrefix"`
@@ -25,9 +25,9 @@ type Consumer struct {
 	Handler     func(msg string) error
 }
 
-var msgKey = "e7uvNbck5NPSS6z0iglw"
+var _msgKey = "e7uvNbck5NPSS6z0iglw"
 var _producer *nsq.Producer
-var _rc RootConfig
+var _rc *RootConfig
 
 type MsgHandler struct {
 	Handler func(msg string) error
@@ -39,12 +39,16 @@ func (h MsgHandler) HandleMessage(message *nsq.Message) error {
 	}
 	threadlocal.SetTraceId(uuid.New().String())
 	msg := string(message.Body)
-	msg = crypto.AesDecryptECB(msg, msgKey)
+	msg = crypto.AesDecryptECB(msg, _msgKey)
 	zlog.Info("接收到MQ消息:{}", msg)
 	return h.Handler(msg)
 }
 
-func InitNsq(rc RootConfig) {
+func NewConfig() *RootConfig {
+	return &RootConfig{}
+}
+
+func InitNsq(rc *RootConfig) {
 	_rc = rc
 	if _rc.Config.DefaultTopicPrefix == "" {
 		_rc.Config.DefaultTopicPrefix = "default"
@@ -53,6 +57,7 @@ func InitNsq(rc RootConfig) {
 	producer, err := nsq.NewProducer(rc.Config.NSQDAddr, config)
 	if err != nil {
 		zlog.Error("创建NSQ生产端异常:{}", err.Error())
+		panic(err)
 	} else {
 		_producer = producer
 	}
@@ -81,7 +86,7 @@ func BuildConsumer(consumers []Consumer) {
 
 func SendMsg(topic, msg string) {
 	zlog.Info("发送到MQ消息:{}", msg)
-	msg = crypto.AesEncryptECB(msg, msgKey)
+	msg = crypto.AesEncryptECB(msg, _msgKey)
 	err := _producer.Publish(_rc.Config.DefaultTopicPrefix+"-"+topic, []byte(msg))
 	if err != nil {
 		zlog.Error("nsq推送消息异常:{}", err.Error())

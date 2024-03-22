@@ -8,8 +8,8 @@ import (
 )
 
 func Init() {
-	snowflake.Init(1, 1)
 	zlog.InitLogger(config.GetLogCfg().Path)
+	snowflake.Init(1, 1)
 	zlog.Info("项目开始启动...")
 	nacos.InitNacos()
 }

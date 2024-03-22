@@ -12,10 +12,10 @@ import (
 )
 
 type RootConfig struct {
-	Config TencentCaptcha `yaml:"tencent-captcha"`
+	Config tencentCaptcha `yaml:"tencent-captcha"`
 }
 
-type TencentCaptcha struct {
+type tencentCaptcha struct {
 	SecretId  string            `yaml:"secretId"`
 	SecretKey string            `yaml:"secretKey"`
 	Endpoint  string            `yaml:"endpoint"`
@@ -37,9 +37,13 @@ type CheckReq struct {
 var credential *common.Credential
 var client *captcha.Client
 
-var cfg TencentCaptcha
+var cfg tencentCaptcha
 
-func InitTencentCaptcha(rc RootConfig) {
+func NewConfig() *RootConfig {
+	return &RootConfig{}
+}
+
+func InitTencentCaptcha(rc *RootConfig) {
 	cfg = rc.Config
 	// 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
 	credential = common.NewCredential(cfg.SecretId, cfg.SecretKey)
@@ -50,6 +54,7 @@ func InitTencentCaptcha(rc RootConfig) {
 	c, err := captcha.NewClient(credential, "", cpf)
 	if err != nil {
 		zlog.Error("创建腾讯验证码客户端异常:{}", err.Error())
+		panic(err)
 	}
 	client = c
 }

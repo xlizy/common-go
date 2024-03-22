@@ -131,6 +131,7 @@ func InitDubbo(services Services) {
 	}
 
 	if err := config.Load(config.WithRootConfig(rc)); err != nil {
+		zlog.Error("初始化Dubbo异常:{}", err.Error())
 		panic(err)
 	}
 }
