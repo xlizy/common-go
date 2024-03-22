@@ -4,7 +4,7 @@ go 1.22
 
 toolchain go1.22.1
 
-replace github.com/xlizy/rpc-interface v0.0.4 => /Users/lixiaolong/XLIZY/workspace-go/rpc-interface
+//replace github.com/xlizy/rpc-interface v0.0.4 => /Users/lixiaolong/XLIZY/workspace-go/rpc-interface
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.1.1
