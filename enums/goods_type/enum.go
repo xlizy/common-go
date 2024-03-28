@@ -26,3 +26,8 @@ func (e GoodsType) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
+
+func (e *GoodsType) UnmarshalJSON(value []byte) error {
+	*e = GoodsType(enums.UnmarshalEnum(value))
+	return nil
+}

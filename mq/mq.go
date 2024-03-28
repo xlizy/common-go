@@ -84,11 +84,14 @@ func BuildConsumer(consumers []Consumer) {
 	}
 }
 
-func SendMsg(topic, msg string) {
+func SendMsg(topic, msg string) error {
 	zlog.Info("发送到MQ消息:{}", msg)
 	msg = crypto.AesEncryptECB(msg, _msgKey)
 	err := _producer.Publish(_rc.Config.DefaultTopicPrefix+"-"+topic, []byte(msg))
 	if err != nil {
 		zlog.Error("nsq推送消息异常:{}", err.Error())
+		return err
+	} else {
+		return nil
 	}
 }

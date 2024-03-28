@@ -4,7 +4,7 @@ go 1.22
 
 toolchain go1.22.1
 
-//replace github.com/xlizy/rpc-interface v0.0.8 => /Users/lixiaolong/XLIZY/workspace-go/rpc-interface
+//replace github.com/xlizy/rpc-interface v0.0.9 => /Users/lixiaolong/XLIZY/workspace-go/rpc-interface
 
 require (
 	dubbo.apache.org/dubbo-go/v3 v3.1.1
@@ -22,7 +22,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/captcha v1.0.881
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.881
 	github.com/timandy/routine v1.1.1
-	github.com/xlizy/rpc-interface v0.0.8
+	github.com/xlizy/rpc-interface v0.0.9
 	go.etcd.io/etcd/client/v3 v3.5.7
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.21.0

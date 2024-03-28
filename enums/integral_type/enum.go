@@ -29,3 +29,8 @@ func (e IntegralType) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
+
+func (e *IntegralType) UnmarshalJSON(value []byte) error {
+	*e = IntegralType(enums.UnmarshalEnum(value))
+	return nil
+}

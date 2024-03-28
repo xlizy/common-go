@@ -2,6 +2,7 @@ package dlock
 
 import (
 	"context"
+	commonConfig "github.com/xlizy/common-go/config"
 	"github.com/xlizy/common-go/zlog"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/concurrency"
@@ -48,6 +49,7 @@ func InitDLock(rc *RootConfig) {
 // ttl锁租期，内部会自动续期，发生异常后在ttl秒后自动释放
 // wait等待锁时间
 func Lock(lockKey string, ttl, wait int) (bool, *LockObj) {
+	lockKey = commonConfig.GetNacosCfg().AppName + "_" + lockKey
 	session, err1 := concurrency.NewSession(_client, concurrency.WithTTL(ttl))
 	if err1 != nil {
 		zlog.Error("获取锁异常:{}", err1.Error())

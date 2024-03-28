@@ -94,3 +94,8 @@ func (e CommonError) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
+
+func (e *CommonError) UnmarshalJSON(value []byte) error {
+	*e = CommonError(enums.UnmarshalEnum(value))
+	return nil
+}

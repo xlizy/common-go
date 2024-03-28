@@ -24,3 +24,8 @@ func (e Currency) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
+
+func (e *Currency) UnmarshalJSON(value []byte) error {
+	*e = Currency(enums.UnmarshalEnum(value))
+	return nil
+}

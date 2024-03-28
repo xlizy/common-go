@@ -31,6 +31,11 @@ func (e YesNo) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.Itoa(int(e))), nil
 }
 
+func (e *YesNo) UnmarshalJSON(value []byte) error {
+	*e = YesNo(enums.UnmarshalEnum(value))
+	return nil
+}
+
 func (e YesNo) Enum() string {
 	return enums.BE(e).Enum
 }

@@ -32,3 +32,8 @@ func (e MessageType) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
+
+func (e *MessageType) UnmarshalJSON(value []byte) error {
+	*e = MessageType(enums.UnmarshalEnum(value))
+	return nil
+}

@@ -40,3 +40,15 @@ func BE(val any) BaseValEnum {
 	json.ToObj(fmt.Sprintf("%s", b), &be)
 	return be
 }
+
+func UnmarshalEnum(value []byte) int {
+	valueStr := string(value)
+	val, err := strconv.Atoi(valueStr)
+	if err != nil {
+		bve := BaseValEnum{}
+		json.ToObj(string(value), &bve)
+		return bve.Val
+	} else {
+		return val
+	}
+}

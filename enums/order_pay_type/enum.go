@@ -32,3 +32,8 @@ func (e OrderPayType) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
+
+func (e *OrderPayType) UnmarshalJSON(value []byte) error {
+	*e = OrderPayType(enums.UnmarshalEnum(value))
+	return nil
+}

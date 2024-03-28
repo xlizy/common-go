@@ -1,8 +1,8 @@
 package models
 
 import (
+	"github.com/xlizy/common-go/xtime"
 	"gorm.io/gorm/schema"
-	"time"
 )
 
 type ControlBy struct {
@@ -30,8 +30,8 @@ func (e *PrimaryKey) SetPrimaryKey(primaryKey string) {
 }
 
 type ModelTime struct {
-	CreatedAt time.Time `json:"createdTime" gorm:"column:created_time;comment:创建时间" url:"createdTime"`
-	UpdatedAt time.Time `json:"updatedTime" gorm:"column:updated_time;comment:最后更新时间" url:"updatedTime"`
+	CreatedAt xtime.Time `json:"createdTime" gorm:"column:created_time;comment:创建时间" url:"createdTime"`
+	UpdatedAt xtime.Time `json:"updatedTime" gorm:"column:updated_time;comment:最后更新时间" url:"updatedTime"`
 }
 
 type ActiveRecord interface {

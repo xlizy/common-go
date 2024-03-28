@@ -37,6 +37,11 @@ func (e ShortUrlType) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.Itoa(int(e))), nil
 }
 
+func (e *ShortUrlType) UnmarshalJSON(value []byte) error {
+	*e = ShortUrlType(enums.UnmarshalEnum(value))
+	return nil
+}
+
 func (e ShortUrlType) Enum() string {
 	return enums.BE(e).Enum
 }

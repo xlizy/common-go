@@ -42,3 +42,8 @@ func (e Device) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
+
+func (e *Device) UnmarshalJSON(value []byte) error {
+	*e = Device(enums.UnmarshalEnum(value))
+	return nil
+}
