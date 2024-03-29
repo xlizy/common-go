@@ -13,9 +13,8 @@ type Time struct {
 }
 
 func (t Time) MarshalJSON() ([]byte, error) {
-	r := make([]byte, 0)
 	if t.Time.IsZero() {
-		return r, nil
+		return []byte("\"\""), nil
 	}
 	return []byte("\"" + t.Time.Format(constant.DataFormat) + "\""), nil
 }
@@ -43,6 +42,7 @@ func (t Time) Value() (driver.Value, error) {
 
 func (t *Time) Scan(value interface{}) (err error) {
 	if value == nil {
+		t.Time = time.Time{}
 		return nil
 	}
 
