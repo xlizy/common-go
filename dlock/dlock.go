@@ -6,6 +6,7 @@ import (
 	"github.com/xlizy/common-go/zlog"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/concurrency"
+	"google.golang.org/grpc/connectivity"
 	"time"
 )
 
@@ -49,6 +50,11 @@ func InitDLock(rc *RootConfig) {
 // ttl锁租期，内部会自动续期，发生异常后在ttl秒后自动释放
 // wait等待锁时间
 func Lock(lockKey string, ttl, wait int) (bool, *LockObj) {
+	if connectivity.Ready != _client.ActiveConnection().GetState() {
+		zlog.Error("加锁失败:{}", "etcd连接异常")
+		return false, nil
+	}
+	_client.ActiveConnection().GetState().String()
 	lockKey = commonConfig.GetNacosCfg().AppName + "_" + lockKey
 	session, err1 := concurrency.NewSession(_client, concurrency.WithTTL(ttl))
 	if err1 != nil {

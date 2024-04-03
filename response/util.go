@@ -2,13 +2,13 @@ package response
 
 import (
 	"github.com/xlizy/common-go/utils"
-	rpc_api "github.com/xlizy/rpc-interface/pbs"
+	rpcApi "github.com/xlizy/rpc-interface/pbs"
 	"reflect"
 )
 
 func RpcRsp(rsp, data any) Response {
 	rpcResValue := reflect.ValueOf(rsp).Elem().FieldByName("Result")
-	rpcRes := rpcResValue.Interface().(*rpc_api.Result)
+	rpcRes := rpcResValue.Interface().(*rpcApi.Result)
 	res := Response{
 		Success:      rpcRes.Success,
 		Code:         rpcRes.Code,
@@ -28,7 +28,7 @@ func RpcRsp(rsp, data any) Response {
 
 func RpcRspByDataFieldName(rsp, data any, dataFieldName string) Response {
 	rpcResValue := reflect.ValueOf(rsp).Elem().FieldByName("Result")
-	rpcRes := rpcResValue.Interface().(*rpc_api.Result)
+	rpcRes := rpcResValue.Interface().(*rpcApi.Result)
 	res := Response{
 		Success:      rpcRes.Success,
 		Code:         rpcRes.Code,

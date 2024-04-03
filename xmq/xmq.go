@@ -3,15 +3,14 @@ package xmq
 import (
 	"context"
 	"github.com/xlizy/common-go/config"
-	"github.com/xlizy/common-go/const/threadlocal"
 	"github.com/xlizy/common-go/dubbo"
 	"github.com/xlizy/common-go/response"
 	"github.com/xlizy/common-go/utils"
 	"github.com/xlizy/common-go/zlog"
-	rpc_api "github.com/xlizy/rpc-interface/pbs"
+	rpcApi "github.com/xlizy/rpc-interface/pbs"
 )
 
-var MQServiceClientImpl = new(rpc_api.MQServiceClientImpl)
+var MQServiceClientImpl = new(rpcApi.MQServiceClientImpl)
 
 func GetMQConsume() dubbo.Service {
 	return dubbo.Service{
@@ -23,8 +22,7 @@ func GetMQConsume() dubbo.Service {
 
 func Send(topic, msg string) response.Response {
 	zlog.Info("发送MQ消息,topic:{},msg:{}", topic, msg)
-	rsp, err := MQServiceClientImpl.Send(context.TODO(), &rpc_api.SendReq{
-		TraceId:  threadlocal.GetTraceId(),
+	rsp, err := MQServiceClientImpl.SendMQ(context.TODO(), &rpcApi.SendMQReq{
 		Topic:    topic,
 		Msg:      msg,
 		ClientIp: utils.GetLocalPriorityIp(config.PriorityNetwork.Networks),

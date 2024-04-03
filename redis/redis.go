@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
+	"github.com/xlizy/common-go/zlog"
 	"strconv"
 	"time"
 )
@@ -42,6 +43,7 @@ func RateLimit(ctx context.Context, window, maxCnt int, key string) bool {
 	if isExits == 0 {
 		_client.LPush(ctx, key, timeStamp)
 		_client.Expire(ctx, key, time.Duration(window)*time.Second)
+		zlog.Info("限流结果:允许放行")
 		return true
 	}
 	lens := _client.LLen(ctx, key).Val()
@@ -61,8 +63,9 @@ func RateLimit(ctx context.Context, window, maxCnt int, key string) bool {
 	if end+1 < maxCnt {
 		_client.LPush(ctx, key, timeStamp)
 		_client.Expire(ctx, key, time.Duration(window)*time.Second)
+		zlog.Info("限流结果:允许放行")
 		return true
 	}
-
+	zlog.Info("限流结果:禁止操作")
 	return false
 }

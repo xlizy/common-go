@@ -32,6 +32,30 @@ const (
 	SYS_ERR_ENUM_ERROR            CommonError = -1021
 	ACCESS_DENIED                 CommonError = 1022
 	CALL_CAPTCHA_ERROR            CommonError = 1023
+	HTTP_CALL_ERROR               CommonError = 1024
+	HTTP_CALL_TIMEOUT             CommonError = 1025
+	MYSQL_ERR_1008                CommonError = 1030
+	MYSQL_ERR_1012                CommonError = 1031
+	MYSQL_ERR_1020                CommonError = 1032
+	MYSQL_ERR_1021                CommonError = 1033
+	MYSQL_ERR_1022                CommonError = 1034
+	MYSQL_ERR_1037                CommonError = 1035
+	MYSQL_ERR_1044                CommonError = 1036
+	MYSQL_ERR_1045                CommonError = 1037
+	MYSQL_ERR_1048                CommonError = 1038
+	MYSQL_ERR_1049                CommonError = 1039
+	MYSQL_ERR_1054                CommonError = 1040
+	MYSQL_ERR_1062                CommonError = 1041
+	MYSQL_ERR_1065                CommonError = 1042
+	MYSQL_ERR_1114                CommonError = 1043
+	MYSQL_ERR_1130                CommonError = 1044
+	MYSQL_ERR_1133                CommonError = 1045
+	MYSQL_ERR_1141                CommonError = 1046
+	MYSQL_ERR_1142                CommonError = 1047
+	MYSQL_ERR_1143                CommonError = 1048
+	MYSQL_ERR_1149                CommonError = 1049
+	MYSQL_ERR_1169                CommonError = 1051
+	MYSQL_ERR_1216                CommonError = 1052
 	DEFAULT                       CommonError = -1
 )
 
@@ -91,6 +115,55 @@ func (e CommonError) MarshalJSON() ([]byte, error) {
 		return enums.JsonObj(int(e), "ACCESS_DENIED", "拒绝访问")
 	case CALL_CAPTCHA_ERROR:
 		return enums.JsonObj(int(e), "CALL_CAPTCHA_ERROR", "调用验证码服务异常")
+	case HTTP_CALL_ERROR:
+		return enums.JsonObj(int(e), "HTTP_CALL_ERROR", "http请求失败")
+	case HTTP_CALL_TIMEOUT:
+		return enums.JsonObj(int(e), "HTTP_CALL_TIMEOUT", "http请求超时")
+	case MYSQL_ERR_1008:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1008", "数据库不存在")
+	case MYSQL_ERR_1012:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1012", "不能读取系统表中的记录")
+	case MYSQL_ERR_1020:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1020", "记录已被其他用户修改")
+	case MYSQL_ERR_1021:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1021", "硬盘剩余空间不足，请加大硬盘可用空间")
+	case MYSQL_ERR_1022:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1022", "关键字重复，更改记录失败")
+	case MYSQL_ERR_1037:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1037", "系统内存不足，请重启数据库或重启服务器")
+	case MYSQL_ERR_1044:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1044", "当前用户没有访问数据库的权限")
+	case MYSQL_ERR_1045:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1045", "不能连接数据库，用户名或密码错误")
+	case MYSQL_ERR_1048:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1048", "字段不能为空")
+	case MYSQL_ERR_1049:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1049", "数据库不存在")
+	case MYSQL_ERR_1054:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1054", "字段不存在")
+	case MYSQL_ERR_1062:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1062", "违反唯一性约束")
+	case MYSQL_ERR_1065:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1065", "无效的SQL语句，SQL语句为空")
+	case MYSQL_ERR_1114:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1114", "数据表已满，不能容纳任何记录")
+	case MYSQL_ERR_1130:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1130", "连接数据库失败，没有连接数据库的权限")
+	case MYSQL_ERR_1133:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1133", "数据库用户不存在")
+	case MYSQL_ERR_1141:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1141", "当前用户无权访问数据库")
+	case MYSQL_ERR_1142:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1142", "当前用户无权访问数据表")
+	case MYSQL_ERR_1143:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1143", "当前用户无权访问数据表中的字段")
+	case MYSQL_ERR_1149:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1149", "SQL语句语法错误")
+	case MYSQL_ERR_1169:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1169", "字段值重复，更新记录失败")
+	case MYSQL_ERR_1216:
+		return enums.JsonObj(int(e), "MYSQL_ERR_1216", "外键约束检查失败，更新子表记录失败")
+
 	}
 	return []byte(strconv.Itoa(int(e))), nil
 }
