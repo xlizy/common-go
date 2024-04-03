@@ -35,8 +35,7 @@ func NewConfig() *RootConfig {
 
 func InitDLock(rc *RootConfig) {
 	client, err := clientv3.New(clientv3.Config{
-		//Endpoints:   rc.Cluster,
-		Endpoints:   []string{"192.168.0.109:2379"},
+		Endpoints:   rc.Cluster,
 		DialTimeout: time.Second * 5})
 	if err != nil {
 		zlog.Error("连接Etcd异常:{}", err.Error())
