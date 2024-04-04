@@ -34,6 +34,7 @@ const (
 	CALL_CAPTCHA_ERROR            CommonError = 1023
 	HTTP_CALL_ERROR               CommonError = 1024
 	HTTP_CALL_TIMEOUT             CommonError = 1025
+	RPC_CALL_ERROR                CommonError = 1026
 	MYSQL_ERR_1008                CommonError = 1030
 	MYSQL_ERR_1012                CommonError = 1031
 	MYSQL_ERR_1020                CommonError = 1032
@@ -119,6 +120,8 @@ func (e CommonError) MarshalJSON() ([]byte, error) {
 		return enums.JsonObj(int(e), "HTTP_CALL_ERROR", "http请求失败")
 	case HTTP_CALL_TIMEOUT:
 		return enums.JsonObj(int(e), "HTTP_CALL_TIMEOUT", "http请求超时")
+	case RPC_CALL_ERROR:
+		return enums.JsonObj(int(e), "RPC_CALL_ERROR", "rpc请求失败")
 	case MYSQL_ERR_1008:
 		return enums.JsonObj(int(e), "MYSQL_ERR_1008", "数据库不存在")
 	case MYSQL_ERR_1012:

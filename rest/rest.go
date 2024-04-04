@@ -25,7 +25,7 @@ func GetJsonReq(timeout time.Duration) *resty.Request {
 		SetHeader("Content-Type", "application/json; charset=utf-8")
 }
 
-func ErrHandler(err error) response.Response {
+func ErrHandler(err error) *response.Response {
 	zlog.Error("http call error:{}", err.Error())
 	ce := common_error.HTTP_CALL_ERROR
 	if e1, ok1 := err.(*url.Error); ok1 {

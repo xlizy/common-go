@@ -73,7 +73,7 @@ func TransInit(c *context.Context) {
 	validatorCtx.Set(val)
 }
 
-func ValidParams(params interface{}) response.Response {
+func ValidParams(params interface{}) *response.Response {
 	valid := validatorCtx.Get().(*pv.Validate)
 	trans := translatorCtx.Get().(ut.Translator)
 	err := valid.Struct(params)
@@ -87,5 +87,5 @@ func ValidParams(params interface{}) response.Response {
 		}
 		return response.Error(common_error.REQUEST_ARGUMENT_NOT_VALID, sliceErrs)
 	}
-	return response.Success("", nil)
+	return response.Succ()
 }

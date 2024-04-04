@@ -28,25 +28,29 @@ type PageResponse struct {
 	Size     int   `json:"size"`
 }
 
-func Success(msg string, data any) Response {
-	return Response{Success: true, Code: 0, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data}
+func Succ() *Response {
+	return &Response{Success: true, Code: 0, Msg: "", ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId()}
 }
 
-func SuccessCus(msg string, data any, extend map[string]string) Response {
-	return Response{Success: true, Code: 0, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data, Extend: extend}
+func Success(msg string, data any) *Response {
+	return &Response{Success: true, Code: 0, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data}
 }
 
-func ErrorCus(code int32, msg string, data any) Response {
-	return Response{Success: false, Code: code, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data}
+func SuccessCus(msg string, data any, extend map[string]string) *Response {
+	return &Response{Success: true, Code: 0, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data, Extend: extend}
 }
 
-func Error(errType any, data any) (res Response) {
-	res = Response{Success: false, Code: common_error.SYS_ERR_ENUM_ERROR.Code(), Msg: common_error.SYS_ERR_ENUM_ERROR.Des(), ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data}
+func ErrorCus(code int32, msg string, data any) *Response {
+	return &Response{Success: false, Code: code, Msg: msg, ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data}
+}
+
+func Error(errType any, data any) (res *Response) {
+	res = &Response{Success: false, Code: common_error.SYS_ERR_ENUM_ERROR.Code(), Msg: common_error.SYS_ERR_ENUM_ERROR.Des(), ResponseTime: time.Now().Format(constant.DataFormat), TraceId: threadlocal.GetTraceId(), Data: data}
 	defer func(r *Response) {
 		err := recover() // recover()内置函数，可以捕获到异常
 		if err != nil {  //说明捕获到错误
 		}
-	}(&res)
+	}(res)
 	code := reflect.ValueOf(errType).MethodByName("Code").Call(nil)[0]
 	des := reflect.ValueOf(errType).MethodByName("Des").Call(nil)[0]
 	res.Code = int32(code.Int())
@@ -55,9 +59,9 @@ func Error(errType any, data any) (res Response) {
 
 }
 
-func RpcError(err error) Response {
+func RpcError(err error) *Response {
 	zlog.Error("调用dubbo服务异常:{}", err.Error())
-	return Response{
+	return &Response{
 		Success:      false,
 		Code:         common_error.DUBBO_SERVICE_UNAVAILABLE.Code(),
 		Msg:          common_error.DUBBO_SERVICE_UNAVAILABLE.Des(),
@@ -66,6 +70,6 @@ func RpcError(err error) Response {
 	}
 }
 
-func Page(total int64, data any, pageNum, pageSize, pages, size int) PageResponse {
-	return PageResponse{Total: total, Data: data, PageNum: pageNum, PageSize: pageSize, Pages: pages, Size: size}
+func Page(total int64, data any, pageNum, pageSize, pages, size int) *PageResponse {
+	return &PageResponse{Total: total, Data: data, PageNum: pageNum, PageSize: pageSize, Pages: pages, Size: size}
 }

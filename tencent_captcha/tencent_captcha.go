@@ -59,7 +59,7 @@ func InitTencentCaptcha(rc *RootConfig) {
 	client = c
 }
 
-func Check(req CheckReq) response.Response {
+func Check(req CheckReq) *response.Response {
 	if config.AppEnv.Env != "PROD" {
 		return response.Success("非正式环境,默认成功", nil)
 	}
@@ -97,6 +97,6 @@ func Check(req CheckReq) response.Response {
 		zlog.Error("行为验证失败:code:{},msg:{}", *captchaCode, *resp.Response.CaptchaMsg)
 		return response.Error(common_error.SMART_VERIFICATION_ERROR, nil)
 	} else {
-		return response.Success("", nil)
+		return response.Succ()
 	}
 }

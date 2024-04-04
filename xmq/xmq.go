@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/xlizy/common-go/config"
 	"github.com/xlizy/common-go/dubbo"
+	"github.com/xlizy/common-go/enums/common_error"
 	"github.com/xlizy/common-go/response"
 	"github.com/xlizy/common-go/utils"
 	"github.com/xlizy/common-go/zlog"
@@ -20,7 +21,7 @@ func GetMQConsume() dubbo.Service {
 	}
 }
 
-func Send(topic, msg string) response.Response {
+func Send(topic, msg string) *response.Response {
 	zlog.Info("发送MQ消息,topic:{},msg:{}", topic, msg)
 	rsp, err := MQServiceClientImpl.SendMQ(context.TODO(), &rpcApi.SendMQReq{
 		Topic:    topic,
@@ -30,11 +31,11 @@ func Send(topic, msg string) response.Response {
 	})
 	if err != nil {
 		zlog.Error("发送MQ失败:{}", err.Error())
-		return response.Error("", nil)
+		return response.Error(common_error.RPC_CALL_ERROR, nil)
 	}
 	if rsp.Success {
 		zlog.Error("发送MQ成功")
-		return response.Success("", nil)
+		return response.Succ()
 	} else {
 		zlog.Error("发送MQ失败:{}", rsp.Msg)
 		return response.ErrorCus(rsp.Code, rsp.Msg, nil)

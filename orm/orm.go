@@ -106,7 +106,7 @@ func ConnMulti(key string) *gorm.DB {
 	return _multiDb[key]
 }
 
-func ErrHandler(err error) response.Response {
+func ErrHandler(err error) *response.Response {
 	zlog.Error("sql exec error:{}", err.Error())
 	if e, ok := err.(*sqlDriverMySql.MySQLError); ok {
 		ce := common_error.SYSTEM_ERROR
@@ -157,5 +157,5 @@ func ErrHandler(err error) response.Response {
 		}
 		return response.Error(ce, e.Message)
 	}
-	return response.Success("", nil)
+	return response.Succ()
 }
