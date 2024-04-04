@@ -6,10 +6,10 @@ import (
 	"reflect"
 )
 
-func RpcRsp(rsp, data any) Response {
+func RpcRsp(rsp, data any) *Response {
 	rpcResValue := reflect.ValueOf(rsp).Elem().FieldByName("Result")
 	rpcRes := rpcResValue.Interface().(*rpcApi.Result)
-	res := Response{
+	res := &Response{
 		Success:      rpcRes.Success,
 		Code:         rpcRes.Code,
 		Msg:          rpcRes.Msg,
@@ -26,10 +26,10 @@ func RpcRsp(rsp, data any) Response {
 	return res
 }
 
-func RpcRspByDataFieldName(rsp, data any, dataFieldName string) Response {
+func RpcRspByDataFieldName(rsp, data any, dataFieldName string) *Response {
 	rpcResValue := reflect.ValueOf(rsp).Elem().FieldByName("Result")
 	rpcRes := rpcResValue.Interface().(*rpcApi.Result)
-	res := Response{
+	res := &Response{
 		Success:      rpcRes.Success,
 		Code:         rpcRes.Code,
 		Msg:          rpcRes.Msg,
